@@ -1,0 +1,2471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emmett O'Brien Simulator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 800px;
+            width: 100%;
+            padding: 30px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #c8102e;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .bor-icon {
+            font-size: 0.6em;
+            background: #f9f7f1;
+            border: 2px solid #d4af37;
+            padding: 5px 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .logged-in-status {
+            display: none;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        .logged-in-status.active {
+            display: inline-block;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #c8102e 0%, #da291c 100%);
+            border-radius: 15px;
+            color: white;
+        }
+
+        .stat-box {
+            text-align: center;
+        }
+
+        .stat-box .label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .stat-box .value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .order-area {
+            background: #f8f8f8;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            min-height: 200px;
+        }
+
+        .current-order {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 3px solid #ffc72c;
+            margin-bottom: 20px;
+        }
+
+        .current-order h3 {
+            color: #c8102e;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .order-items {
+            list-style: none;
+            margin-bottom: 15px;
+        }
+
+        .order-items li {
+            padding: 8px;
+            margin: 5px 0;
+            background: #fff8dc;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50 0%, #8bc34a 100%);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .button-area {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .shop-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-size: 1.2em;
+            box-shadow: 0 5px 20px rgba(156, 39, 176, 0.4);
+            z-index: 100;
+        }
+
+        .shop-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(156, 39, 176, 0.6);
+        }
+
+        .account-button {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-size: 1.2em;
+            box-shadow: 0 5px 20px rgba(33, 150, 243, 0.4);
+            z-index: 100;
+        }
+
+        .account-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(33, 150, 243, 0.6);
+        }
+
+        .leaderboard-button {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-size: 1.2em;
+            box-shadow: 0 5px 20px rgba(255, 152, 0, 0.4);
+            z-index: 100;
+        }
+
+        .leaderboard-button:hover {
+            transform: translateX(-50%) translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 152, 0, 0.6);
+        }
+
+        .leaderboard-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .leaderboard-content {
+            background: white;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 50px rgba(255, 152, 0, 0.5);
+        }
+
+        .leaderboard-content h2 {
+            color: #ff9800;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .leaderboard-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .leaderboard-table thead {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+        }
+
+        .leaderboard-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .leaderboard-table th:first-child {
+            text-align: center;
+            width: 60px;
+        }
+
+        .leaderboard-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .leaderboard-table td:first-child {
+            text-align: center;
+            font-weight: bold;
+            color: #ff9800;
+        }
+
+        .leaderboard-table tr:hover {
+            background: #fff8e1;
+        }
+
+        .leaderboard-rank {
+            display: inline-block;
+            min-width: 30px;
+        }
+
+        .rank-1 {
+            color: #ffd700 !important;
+            font-size: 1.3em;
+        }
+
+        .rank-2 {
+            color: #c0c0c0 !important;
+            font-size: 1.2em;
+        }
+
+        .rank-3 {
+            color: #cd7f32 !important;
+            font-size: 1.1em;
+        }
+
+        .leaderboard-username {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .leaderboard-title {
+            color: #9c27b0;
+            font-size: 0.9em;
+            font-style: italic;
+            margin-left: 8px;
+        }
+
+        .current-user-row {
+            background: #e3f2fd !important;
+            border-left: 4px solid #2196f3;
+        }
+
+        .current-user-row td:first-child {
+            color: #2196f3 !important;
+        }
+
+        .trophy-icon {
+            margin-right: 5px;
+        }
+
+        .no-data-message {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 1.2em;
+        }
+
+        .shop-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .shop-content {
+            background: white;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 50px rgba(156, 39, 176, 0.5);
+        }
+
+        .shop-content h2 {
+            color: #9c27b0;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .shop-items {
+            display: grid;
+            gap: 20px;
+        }
+
+        .shop-item {
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #9c27b0;
+        }
+
+        .shop-item h3 {
+            color: #9c27b0;
+            margin-bottom: 10px;
+            font-size: 1.4em;
+        }
+
+        .shop-item p {
+            color: #555;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .shop-item-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .price {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #9c27b0;
+        }
+
+        .buy-button {
+            background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 8px;
+        }
+
+        .buy-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(156, 39, 176, 0.4);
+        }
+
+        .buy-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .achievements-section {
+            background: #f8f8f8;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .achievements-section h3 {
+            color: #9c27b0;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .badges {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 3px solid #d4af37;
+            font-weight: bold;
+            color: #333;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badge-icon {
+            font-size: 1.5em;
+        }
+
+        .bots-active {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 5px solid #2196f3;
+        }
+
+        .bots-active h4 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+
+        .bot-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .account-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .account-content {
+            background: white;
+            max-width: 700px;
+            margin: 100px auto;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 50px rgba(33, 150, 243, 0.5);
+        }
+
+        .account-content h2 {
+            color: #2196f3;
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .auth-view {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .auth-view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 12px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+            color: white;
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #2196f3;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+        }
+
+        .logged-in-view {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .logged-in-view.active {
+            display: block;
+        }
+
+        .profile-header {
+            text-align: center;
+            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .profile-header h3 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .profile-header .username {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .profile-header .member-since {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .brecken-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #333;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-top: 10px;
+            border: 2px solid #d4af37;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid #2196f3;
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2196f3;
+        }
+
+        .profile-section {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .profile-section h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            border-bottom: 2px solid #2196f3;
+            padding-bottom: 8px;
+        }
+
+        .shop-items-owned {
+            display: grid;
+            gap: 10px;
+        }
+
+        .owned-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 3px solid #4caf50;
+        }
+
+        .owned-item .item-name {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .owned-item .item-count {
+            background: #4caf50;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+        }
+
+        .multipliers-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .multiplier-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .multiplier-box .mult-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .multiplier-box .mult-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #ff9800;
+        }
+
+        .logout-button {
+            width: 100%;
+            padding: 12px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .logout-button:hover {
+            background: #d32f2f;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .success-message {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .title-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1100;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .title-content {
+            background: white;
+            max-width: 600px;
+            margin: 100px auto;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 50px rgba(156, 39, 176, 0.5);
+        }
+
+        .title-content h2 {
+            color: #9c27b0;
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .titles-list {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .title-item {
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #9c27b0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .title-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .title-item.selected {
+            border-left-color: #4caf50;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        }
+
+        .title-item.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border-left-color: #999;
+        }
+
+        .title-item.locked:hover {
+            transform: none;
+        }
+
+        .title-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .title-name {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        .title-badge {
+            background: #4caf50;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+        }
+
+        .title-badge.locked-badge {
+            background: #999;
+        }
+
+        .title-requirement {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .user-title-display {
+            color: #9c27b0;
+            font-size: 0.8em;
+            font-weight: normal;
+            display: block;
+            margin-top: 5px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .user-title-display:hover {
+            color: #7b1fa2;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .make-button {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            flex: 1;
+        }
+
+        .make-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .make-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .complete-button {
+            background: linear-gradient(135deg, #ffc72c 0%, #ffb700 100%);
+            color: #333;
+            flex: 1;
+        }
+
+        .complete-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 199, 44, 0.4);
+        }
+
+        .complete-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .bill-of-rights-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .bill-of-rights-content {
+            background: #f9f7f1;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 50px;
+            border-radius: 10px;
+            box-shadow: 0 0 50px rgba(255,215,0,0.5);
+            border: 3px solid #d4af37;
+        }
+
+        .bill-of-rights-content h2 {
+            text-align: center;
+            color: #1a1a1a;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            font-family: 'Georgia', serif;
+        }
+
+        .amendment {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: white;
+            border-left: 5px solid #c8102e;
+            border-radius: 5px;
+        }
+
+        .amendment h3 {
+            color: #c8102e;
+            margin-bottom: 10px;
+            font-family: 'Georgia', serif;
+        }
+
+        .amendment p {
+            line-height: 1.8;
+            color: #333;
+            font-size: 1.05em;
+        }
+
+        .close-button {
+            display: block;
+            margin: 30px auto 0;
+            background: #c8102e;
+            color: white;
+            padding: 15px 40px;
+        }
+
+        .close-button:hover {
+            background: #a00d24;
+        }
+
+        .congrats-message {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .congrats-message h3 {
+            color: #c8102e;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .pulse {
+            animation: pulse 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>🍔 EMMETT O'BRIEN SIMULATOR 🍟<span id="borIcons"></span></h1>
+            <p>Welcome to McDonald's! Make orders, earn O'Brien Points!</p>
+            <div id="loggedInStatus" class="logged-in-status">
+                ✓ Logged in as <span id="headerUsername"></span> - Progress auto-saved
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-box">
+                <div class="label">O'Brien Points</div>
+                <div class="value" id="points">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="label">Orders Completed</div>
+                <div class="value" id="orders">0</div>
+            </div>
+        </div>
+
+        <div id="botsSection" style="display: none;" class="bots-active">
+            <h4>🤖 Active Bots:</h4>
+            <div id="botsList"></div>
+        </div>
+
+        <div id="achievementsSection" style="display: none;" class="achievements-section">
+            <h3>🏆 Achievements</h3>
+            <div class="badges" id="badgesContainer"></div>
+        </div>
+
+        <div class="order-area">
+            <div id="orderDisplay"></div>
+            <div class="button-area">
+                <button class="make-button" id="makeButton" onclick="startMakingOrder()">
+                    Start New Order
+                </button>
+                <button class="complete-button" id="completeButton" onclick="completeOrder()" disabled>
+                    Complete Order
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <button class="shop-button" onclick="openShop()">🛒 SHOP</button>
+    <button class="account-button" onclick="openAccount()">👤 ACCOUNT</button>
+    <button class="leaderboard-button" onclick="openLeaderboard()">🏆 LEADERBOARD</button>
+
+    <div class="bill-of-rights-modal" id="billModal">
+        <div class="bill-of-rights-content">
+            <div class="congrats-message">
+                <h3>🎉 CONGRATULATIONS! 🎉</h3>
+                <p>You've earned 10 O'Brien Points!</p>
+                <p>Here is the Bill of Rights...</p>
+            </div>
+
+            <h2>The Bill of Rights</h2>
+            
+            <div class="amendment">
+                <h3>Amendment I</h3>
+                <p>Congress shall make no law respecting an establishment of religion, or prohibiting the free exercise thereof; or abridging the freedom of speech, or of the press; or the right of the people peaceably to assemble, and to petition the Government for a redress of grievances.</p>
+            </div>
+
+            <div class="amendment">
+                <h3>Amendment II</h3>
+                <p>A well regulated Militia, being necessary to the security of a free State, the right of the people to keep and bear Arms, shall not be infringed.</p>
+            </div>
+
+            <div class="amendment">
+                <h3>Amendment III</h3>
+                <p>No Soldier shall, in time of peace be quartered in any house, without the consent of the Owner, nor in time of war, but in a manner to be prescribed by law.</p>
+            </div>
+
+            <div class="amendment">
+                <h3>Amendment IV</h3>
+                <p>The right of the people to be secure in their persons, houses, papers, and effects, against unreasonable searches and seizures, shall not be violated, and no Warrants shall issue, but upon probable cause, supported by Oath or affirmation, and particularly describing the place to be searched, and the persons or things to be seized.</p>
+            </div>
+
+            <div class="amendment">
+                <h3>Amendment V</h3>
+                <p>No person shall be held to answer for a capital, or otherwise infamous crime, unless on a presentment or indictment of a Grand Jury, except in cases arising in the land or naval forces, or in the Militia, when in actual service in time of War or public danger; nor shall any person be subject for the same offence to be twice put in jeopardy of life or limb; nor shall be compelled in any criminal case to be a witness against himself, nor be deprived of life, liberty, or property, without due process of law; nor shall private property be taken for public use, without just compensation.</p>
+            </div>
+
+            <div class="amendment">
+                <h3>Amendment VI</h3>
+                <p>In all criminal prosecutions, the accused shall enjoy the right to a speedy and public trial, by an impartial jury of the State and district wherein the crime shall have been committed, which district shall have been previously ascertained by law, and to be informed of the nature and cause of the accusation; to be confronted with the witnesses against him; to have compulsory process for obtaining witnesses in his favor, and to have the Assistance of Counsel for his defence.</p>
+            </div>
+
+            <div class="amendment">
+                <h3>Amendment VII</h3>
+                <p>In Suits at common law, where the value in controversy shall exceed twenty dollars, the right of trial by jury shall be preserved, and no fact tried by a jury, shall be otherwise re-examined in any Court of the United States, than according to the rules of the common law.</p>
+            </div>
+
+            <div class="amendment">
+                <h3>Amendment VIII</h3>
+                <p>Excessive bail shall not be required, nor excessive fines imposed, nor cruel and unusual punishments inflicted.</p>
+            </div>
+
+            <div class="amendment">
+                <h3>Amendment IX</h3>
+                <p>The enumeration in the Constitution, of certain rights, shall not be construed to deny or disparage others retained by the people.</p>
+            </div>
+
+            <div class="amendment">
+                <h3>Amendment X</h3>
+                <p>The powers not delegated to the United States by the Constitution, nor prohibited by it to the States, are reserved to the States respectively, or to the people.</p>
+            </div>
+
+            <button class="close-button" onclick="closeBillOfRights()">Close</button>
+        </div>
+    </div>
+
+    <div class="shop-modal" id="shopModal">
+        <div class="shop-content">
+            <h2>🛒 SHOP</h2>
+            <div class="shop-items">
+                <div class="shop-item">
+                    <h3>📜 The Bill Of Rights</h3>
+                    <p>Multiplies your O'Brien points by 2 every time you complete an order! Price increases by 5x with each purchase.</p>
+                    <div class="shop-item-footer">
+                        <span class="price" id="borPrice">10 Points</span>
+                        <button class="buy-button" onclick="buyBillOfRights()">Buy</button>
+                    </div>
+                    <small style="color: #666; display: block; margin-top: 10px;">Owned: <span id="borCount">0</span></small>
+                </div>
+
+                <div class="shop-item">
+                    <h3>📃 The Declaration of Independence</h3>
+                    <p>Hire Thomas Jefferson as a bot to automatically complete 1 order every 3 seconds! Grants you the "Founding Father" achievement badge.</p>
+                    <div class="shop-item-footer">
+                        <span class="price">200 Points</span>
+                        <button class="buy-button" id="doiButton" onclick="buyDeclaration()">Buy</button>
+                    </div>
+                </div>
+
+                <div class="shop-item">
+                    <h3>🔊 Steven Bradley</h3>
+                    <p>Makes an annoying noise every 5 seconds, BUT multiplies all your orders completed by 2! One-time purchase only.</p>
+                    <div class="shop-item-footer">
+                        <span class="price">1000 Points</span>
+                        <button class="buy-button" id="stevenButton" onclick="buySteven()">Buy</button>
+                    </div>
+                </div>
+
+                <div class="shop-item">
+                    <h3>🏅 Noah Roland Badge</h3>
+                    <p>Unlock the prestigious Noah Roland achievement badge! Requires 50 orders completed. One-time purchase only.</p>
+                    <div class="shop-item-footer">
+                        <span class="price">50 Orders</span>
+                        <button class="buy-button" id="noahButton" onclick="buyNoah()">Buy</button>
+                    </div>
+                </div>
+            </div>
+            <button class="close-button" onclick="closeShop()">Close Shop</button>
+        </div>
+    </div>
+
+    <div class="account-modal" id="accountModal">
+        <div class="account-content">
+            <h2>👤 Account</h2>
+            
+            <!-- Login/Signup View -->
+            <div id="authView" class="auth-view active">
+                <div class="auth-tabs">
+                    <button class="tab-button active" onclick="switchTab('login')">Login</button>
+                    <button class="tab-button" onclick="switchTab('signup')">Sign Up</button>
+                </div>
+
+                <div id="errorMessage" class="error-message"></div>
+                <div id="successMessage" class="success-message"></div>
+
+                <!-- Login Form -->
+                <form id="loginForm" class="auth-form active" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="loginUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <button type="submit" class="submit-button">Login</button>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="signupForm" class="auth-form" onsubmit="handleSignup(event)">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="signupUsername" required minlength="3">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="signupPassword" required minlength="4">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        <input type="password" id="signupPasswordConfirm" required>
+                    </div>
+                    <button type="submit" class="submit-button">Create Account</button>
+                </form>
+
+                <button class="close-button" onclick="closeAccount()">Close</button>
+            </div>
+
+            <!-- Logged In View -->
+            <div id="loggedInView" class="logged-in-view">
+                <div class="profile-header">
+                    <h3>👤 Profile</h3>
+                    <div class="username" id="currentUsername"></div>
+                    <div class="user-title-display" id="userTitleDisplay" onclick="openTitleSelector()">Click to change title</div>
+                    <div id="breckenBadge" style="display: none;" class="brecken-badge">⭐ CREATOR - 10x Point Bonus!</div>
+                    <div class="member-since" id="memberSince">Member since: ...</div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">O'Brien Points</div>
+                        <div class="stat-value" id="userPoints">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Orders Completed</div>
+                        <div class="stat-value" id="userOrders">0</div>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <h4>⚡ Active Multipliers</h4>
+                    <div class="multipliers-display">
+                        <div class="multiplier-box">
+                            <div class="mult-label">Point Multiplier</div>
+                            <div class="mult-value" id="userPointMult">1x</div>
+                        </div>
+                        <div class="multiplier-box">
+                            <div class="mult-label">Order Multiplier</div>
+                            <div class="mult-value" id="userOrderMult">1x</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <h4>🛒 Shop Items Owned</h4>
+                    <div class="shop-items-owned" id="ownedItemsList">
+                        <p style="color: #999; text-align: center;">No items purchased yet</p>
+                    </div>
+                </div>
+
+                <div class="profile-section" id="achievementsProfile" style="display: none;">
+                    <h4>🏆 Achievements</h4>
+                    <div id="profileBadges"></div>
+                </div>
+
+                <div class="profile-section">
+                    <h4>💾 Save Information</h4>
+                    <p style="color: #666; margin-bottom: 10px;">Last saved: <span id="lastSaveTime">Never</span></p>
+                    <p style="color: #666; font-size: 0.9em;">✓ Your progress is automatically saved every 10 seconds and after each action</p>
+                </div>
+
+                <button class="logout-button" onclick="handleLogout()">Logout</button>
+                <button class="close-button" onclick="closeAccount()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="title-modal" id="titleModal">
+        <div class="title-content">
+            <h2>🎖️ Select Your Title</h2>
+            <div class="titles-list" id="titlesList"></div>
+            <button class="close-button" onclick="closeTitleSelector()">Close</button>
+        </div>
+    </div>
+
+    <div class="leaderboard-modal" id="leaderboardModal">
+        <div class="leaderboard-content">
+            <h2>🏆 Leaderboard</h2>
+            <p class="leaderboard-subtitle">Top 50 Players by Orders Completed</p>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Player</th>
+                        <th>Orders Completed</th>
+                        <th>O'Brien Points</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboardBody">
+                    <!-- Leaderboard rows will be inserted here -->
+                </tbody>
+            </table>
+            <button class="close-button" onclick="closeLeaderboard()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        let points = 0;
+        let ordersCompleted = 0;
+        let currentOrder = null;
+        let progress = 0;
+        let progressInterval = null;
+        let hasShownBillOfRights = false;
+
+        // Shop items
+        let billOfRightsOwned = 0;
+        let billOfRightsPrice = 10;
+        let pointMultiplier = 1;
+        let billOfRightsBadgeEarned = false;
+        
+        let declarationOwned = false;
+        let declarationBotInterval = null;
+        
+        let stevenBradleyOwned = false;
+        let stevenInterval = null;
+        
+        let noahRolandOwned = false;
+        
+        let orderMultiplier = 1;
+
+        // Account system
+        let currentUser = null;
+        let autoSaveInterval = null;
+        let selectedTitle = null;
+
+        // Title system
+        const titles = [
+            { id: 'none', name: 'No Title', requirement: 0, requirementText: 'Default' },
+            { id: 'beginner', name: 'Beginner O\'Brien', requirement: 10, requirementText: 'Complete 10 orders' },
+            { id: 'intermediate', name: 'Intermediate O\'Brien', requirement: 50, requirementText: 'Complete 50 orders' },
+            { id: 'advanced', name: 'Advanced O\'Brien', requirement: 250, requirementText: 'Complete 250 orders' },
+            { id: 'creator', name: 'Creator', requirement: -1, requirementText: 'Special (Brecken only)' }
+        ];
+
+        // Initialize on page load
+        window.onload = function() {
+            checkLoggedInUser();
+        };
+
+        const menuItems = [
+            'Big Mac', 'Quarter Pounder', 'McChicken', 'Filet-O-Fish',
+            'Large Fries', 'Medium Fries', 'Small Fries',
+            'Chicken McNuggets (10pc)', 'Chicken McNuggets (6pc)',
+            'McFlurry', 'Apple Pie', 'Cheeseburger', 'Happy Meal',
+            'Coca-Cola', 'Sprite', 'Orange Juice', 'Coffee', 'Iced Coffee'
+        ];
+
+        function generateRandomOrder() {
+            const numItems = Math.floor(Math.random() * 4) + 2; // 2-5 items
+            const items = [];
+            for (let i = 0; i < numItems; i++) {
+                const item = menuItems[Math.floor(Math.random() * menuItems.length)];
+                items.push(item);
+            }
+            return items;
+        }
+
+        function startMakingOrder() {
+            if (currentOrder) return;
+
+            currentOrder = generateRandomOrder();
+            progress = 0;
+            
+            document.getElementById('makeButton').disabled = true;
+            document.getElementById('completeButton').disabled = true;
+
+            displayOrder();
+            startProgress();
+        }
+
+        function displayOrder() {
+            const orderDisplay = document.getElementById('orderDisplay');
+            orderDisplay.innerHTML = `
+                <div class="current-order">
+                    <h3>📋 Current Order:</h3>
+                    <ul class="order-items">
+                        ${currentOrder.map(item => `<li><span>${item}</span><span>✓</span></li>`).join('')}
+                    </ul>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%">
+                            Making... 0%
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function startProgress() {
+            progressInterval = setInterval(() => {
+                progress += 2;
+                const progressFill = document.getElementById('progressFill');
+                progressFill.style.width = progress + '%';
+                progressFill.textContent = `Making... ${progress}%`;
+
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+                    progressFill.textContent = 'Ready!';
+                    document.getElementById('completeButton').disabled = false;
+                }
+            }, 50);
+        }
+
+        function completeOrder() {
+            if (!currentOrder) return;
+
+            let ordersToAdd = 1 * orderMultiplier;
+            ordersCompleted += ordersToAdd;
+            
+            let pointsToAdd = 1 * pointMultiplier;
+            
+            // Apply Brecken bonus (10x points)
+            if (currentUser && currentUser.toLowerCase() === 'brecken') {
+                pointsToAdd *= 10;
+            }
+            
+            points += pointsToAdd;
+            
+            document.getElementById('orders').textContent = ordersCompleted;
+            document.getElementById('points').textContent = points;
+            
+            // Add pulse animation
+            document.getElementById('points').classList.add('pulse');
+            setTimeout(() => {
+                document.getElementById('points').classList.remove('pulse');
+            }, 500);
+
+            currentOrder = null;
+            let bonusText = (currentUser && currentUser.toLowerCase() === 'brecken') ? ' (10x Brecken Bonus!)' : '';
+            document.getElementById('orderDisplay').innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <h3 style="color: #4caf50; font-size: 1.5em; margin-bottom: 10px;">✅ Order Complete!</h3>
+                    <p style="color: #666;">+${pointsToAdd} O'Brien Point${pointsToAdd > 1 ? 's' : ''} earned!${bonusText}</p>
+                    <p style="color: #666;">+${ordersToAdd} Order${ordersToAdd > 1 ? 's' : ''} completed!</p>
+                </div>
+            `;
+
+            document.getElementById('completeButton').disabled = true;
+            document.getElementById('makeButton').disabled = false;
+
+            if (points >= 10 && !hasShownBillOfRights) {
+                hasShownBillOfRights = true;
+                setTimeout(showBillOfRights, 1000);
+            }
+
+            // Auto-save if user is logged in
+            if (currentUser) {
+                saveProgress();
+                updateUserStats();
+            }
+        }
+
+        function showBillOfRights() {
+            const modal = document.getElementById('billModal');
+            modal.style.display = 'block';
+            
+            // Read the Bill of Rights using text-to-speech
+            if ('speechSynthesis' in window) {
+                const text = getBillOfRightsText();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.9;
+                utterance.pitch = 1;
+                utterance.volume = 1;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function getBillOfRightsText() {
+            return `
+                Congratulations! You have earned 10 O'Brien Points! 
+                Here is the Bill of Rights of the United States Constitution.
+                
+                Amendment 1: Congress shall make no law respecting an establishment of religion, or prohibiting the free exercise thereof; or abridging the freedom of speech, or of the press; or the right of the people peaceably to assemble, and to petition the Government for a redress of grievances.
+                
+                Amendment 2: A well regulated Militia, being necessary to the security of a free State, the right of the people to keep and bear Arms, shall not be infringed.
+                
+                Amendment 3: No Soldier shall, in time of peace be quartered in any house, without the consent of the Owner, nor in time of war, but in a manner to be prescribed by law.
+                
+                Amendment 4: The right of the people to be secure in their persons, houses, papers, and effects, against unreasonable searches and seizures, shall not be violated, and no Warrants shall issue, but upon probable cause, supported by Oath or affirmation, and particularly describing the place to be searched, and the persons or things to be seized.
+                
+                Amendment 5: No person shall be held to answer for a capital, or otherwise infamous crime, unless on a presentment or indictment of a Grand Jury, except in cases arising in the land or naval forces, or in the Militia, when in actual service in time of War or public danger; nor shall any person be subject for the same offence to be twice put in jeopardy of life or limb; nor shall be compelled in any criminal case to be a witness against himself, nor be deprived of life, liberty, or property, without due process of law; nor shall private property be taken for public use, without just compensation.
+                
+                Amendment 6: In all criminal prosecutions, the accused shall enjoy the right to a speedy and public trial, by an impartial jury of the State and district wherein the crime shall have been committed, which district shall have been previously ascertained by law, and to be informed of the nature and cause of the accusation; to be confronted with the witnesses against him; to have compulsory process for obtaining witnesses in his favor, and to have the Assistance of Counsel for his defence.
+                
+                Amendment 7: In Suits at common law, where the value in controversy shall exceed twenty dollars, the right of trial by jury shall be preserved, and no fact tried by a jury, shall be otherwise re-examined in any Court of the United States, than according to the rules of the common law.
+                
+                Amendment 8: Excessive bail shall not be required, nor excessive fines imposed, nor cruel and unusual punishments inflicted.
+                
+                Amendment 9: The enumeration in the Constitution, of certain rights, shall not be construed to deny or disparage others retained by the people.
+                
+                Amendment 10: The powers not delegated to the United States by the Constitution, nor prohibited by it to the States, are reserved to the States respectively, or to the people.
+            `;
+        }
+
+        function closeBillOfRights() {
+            document.getElementById('billModal').style.display = 'none';
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+        }
+
+        // Shop Functions
+        function openShop() {
+            document.getElementById('shopModal').style.display = 'block';
+            updateShopDisplay();
+        }
+
+        function closeShop() {
+            document.getElementById('shopModal').style.display = 'none';
+        }
+
+        function updateShopDisplay() {
+            document.getElementById('borPrice').textContent = billOfRightsPrice + ' Points';
+            document.getElementById('borCount').textContent = billOfRightsOwned;
+        }
+
+        function updateBORIcons() {
+            const iconsContainer = document.getElementById('borIcons');
+            iconsContainer.innerHTML = '';
+            
+            if (billOfRightsOwned > 0) {
+                const icon = document.createElement('span');
+                icon.className = 'bor-icon';
+                icon.textContent = `📜 x${billOfRightsOwned}`;
+                iconsContainer.appendChild(icon);
+            }
+        }
+
+        function buyBillOfRights() {
+            if (points >= billOfRightsPrice) {
+                points -= billOfRightsPrice;
+                billOfRightsOwned++;
+                pointMultiplier *= 2;
+                billOfRightsPrice = Math.floor(billOfRightsPrice * 5);
+                
+                // Award badge on first purchase
+                if (!billOfRightsBadgeEarned) {
+                    billOfRightsBadgeEarned = true;
+                    addBillOfRightsBadge();
+                }
+                
+                document.getElementById('points').textContent = points;
+                updateShopDisplay();
+                updateBORIcons();
+                
+                let message = `Bill of Rights purchased! Your point multiplier is now ${pointMultiplier}x!`;
+                if (billOfRightsOwned === 1) {
+                    message += '\n\nAchievement Unlocked: "Constitutional Scholar"!';
+                }
+                alert(message);
+                
+                // Auto-save if user is logged in
+                if (currentUser) {
+                    saveProgress();
+                    updateUserStats();
+                }
+            } else {
+                alert('Not enough O\'Brien Points!');
+            }
+        }
+
+        function addBillOfRightsBadge() {
+            const achievementsSection = document.getElementById('achievementsSection');
+            const badgesContainer = document.getElementById('badgesContainer');
+            
+            achievementsSection.style.display = 'block';
+            
+            // Check if badge already exists
+            if (document.getElementById('borBadge')) return;
+            
+            const badge = document.createElement('div');
+            badge.id = 'borBadge';
+            badge.className = 'badge';
+            badge.innerHTML = `
+                <span class="badge-icon">📜</span>
+                <span>Constitutional Scholar</span>
+            `;
+            badgesContainer.appendChild(badge);
+        }
+
+        function buyDeclaration() {
+            if (declarationOwned) {
+                alert('You already own the Declaration of Independence!');
+                return;
+            }
+            
+            if (points >= 200) {
+                points -= 200;
+                declarationOwned = true;
+                
+                document.getElementById('points').textContent = points;
+                document.getElementById('doiButton').disabled = true;
+                document.getElementById('doiButton').textContent = 'OWNED';
+                
+                // Start the bot
+                startDeclarationBot();
+                updateBotsDisplay();
+                
+                // Add badge
+                addDeclarationBadge();
+                
+                alert('Thomas Jefferson hired! You now have a bot working for you and earned the "Founding Father" badge!');
+                
+                // Auto-save if user is logged in
+                if (currentUser) {
+                    saveProgress();
+                    updateUserStats();
+                }
+            } else {
+                alert('Not enough O\'Brien Points!');
+            }
+        }
+
+        function startDeclarationBot() {
+            declarationBotInterval = setInterval(() => {
+                // Bot completes an order automatically
+                let pointsToAdd = 1 * pointMultiplier;
+                
+                // Apply Brecken bonus (10x points)
+                if (currentUser && currentUser.toLowerCase() === 'brecken') {
+                    pointsToAdd *= 10;
+                }
+                
+                let ordersToAdd = 1 * orderMultiplier;
+                
+                points += pointsToAdd;
+                ordersCompleted += ordersToAdd;
+                
+                document.getElementById('points').textContent = points;
+                document.getElementById('orders').textContent = ordersCompleted;
+                
+                // Auto-save if user is logged in (but only save every 5 bot completions to reduce overhead)
+                if (currentUser && ordersCompleted % 5 === 0) {
+                    saveProgress();
+                    updateUserStats();
+                }
+            }, 3000);
+        }
+
+        function addDeclarationBadge() {
+            const achievementsSection = document.getElementById('achievementsSection');
+            const badgesContainer = document.getElementById('badgesContainer');
+            
+            achievementsSection.style.display = 'block';
+            
+            // Check if badge already exists
+            if (document.getElementById('declarationBadge')) return;
+            
+            const badge = document.createElement('div');
+            badge.id = 'declarationBadge';
+            badge.className = 'badge';
+            badge.innerHTML = `
+                <span class="badge-icon">📃</span>
+                <span>Founding Father</span>
+            `;
+            badgesContainer.appendChild(badge);
+        }
+
+
+        function updateBotsDisplay() {
+            const botsSection = document.getElementById('botsSection');
+            const botsList = document.getElementById('botsList');
+            
+            if (declarationOwned) {
+                botsSection.style.display = 'block';
+                botsList.innerHTML = `
+                    <div class="bot-info">
+                        <span>📃</span> Thomas Jefferson Bot (1 order every 3 seconds)
+                    </div>
+                `;
+            } else {
+                botsSection.style.display = 'none';
+            }
+        }
+
+        function buySteven() {
+            if (stevenBradleyOwned) {
+                alert('You already own Steven Bradley!');
+                return;
+            }
+            
+            if (points >= 1000) {
+                points -= 1000;
+                stevenBradleyOwned = true;
+                orderMultiplier *= 2;
+                
+                document.getElementById('points').textContent = points;
+                document.getElementById('stevenButton').disabled = true;
+                document.getElementById('stevenButton').textContent = 'OWNED';
+                
+                // Start annoying sound
+                startStevenSound();
+                
+                alert('Steven Bradley purchased! Your order completion multiplier is now 2x!\n(Warning: Annoying sound activated!)');
+                
+                // Auto-save if user is logged in
+                if (currentUser) {
+                    saveProgress();
+                    updateUserStats();
+                }
+            } else {
+                alert('Not enough O\'Brien Points!');
+            }
+        }
+
+        function startStevenSound() {
+            // Create audio context for annoying beep
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            stevenInterval = setInterval(() => {
+                // Create oscillator for annoying beep sound
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 800; // Annoying frequency
+                oscillator.type = 'square'; // Harsh square wave
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            }, 5000);
+        }
+
+        function buyNoah() {
+            if (noahRolandOwned) {
+                alert('You already own the Noah Roland Badge!');
+                return;
+            }
+            
+            if (ordersCompleted >= 50) {
+                noahRolandOwned = true;
+                
+                document.getElementById('noahButton').disabled = true;
+                document.getElementById('noahButton').textContent = 'OWNED';
+                
+                // Add badge to achievements
+                addNoahBadge();
+                
+                alert('Noah Roland Badge unlocked! Check your achievements!');
+                
+                // Auto-save if user is logged in
+                if (currentUser) {
+                    saveProgress();
+                }
+            } else {
+                alert(`You need ${50 - ordersCompleted} more orders completed!`);
+            }
+        }
+
+        function addNoahBadge() {
+            const achievementsSection = document.getElementById('achievementsSection');
+            const badgesContainer = document.getElementById('badgesContainer');
+            
+            achievementsSection.style.display = 'block';
+            
+            // Check if badge already exists
+            if (document.getElementById('noahBadge')) return;
+            
+            const badge = document.createElement('div');
+            badge.id = 'noahBadge';
+            badge.className = 'badge';
+            badge.innerHTML = `
+                <span class="badge-icon">🏅</span>
+                <span>Noah Roland</span>
+            `;
+            badgesContainer.appendChild(badge);
+        }
+
+        // Account System Functions
+        function openAccount() {
+            document.getElementById('accountModal').style.display = 'block';
+            if (currentUser) {
+                showLoggedInView();
+                updateUserStats();
+            } else {
+                showAuthView();
+            }
+        }
+
+        function closeAccount() {
+            document.getElementById('accountModal').style.display = 'none';
+            hideMessages();
+        }
+
+        function switchTab(tab) {
+            const loginTab = document.querySelector('.tab-button:first-child');
+            const signupTab = document.querySelector('.tab-button:last-child');
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            
+            hideMessages();
+            
+            if (tab === 'login') {
+                loginTab.classList.add('active');
+                signupTab.classList.remove('active');
+                loginForm.classList.add('active');
+                signupForm.classList.remove('active');
+            } else {
+                signupTab.classList.add('active');
+                loginTab.classList.remove('active');
+                signupForm.classList.add('active');
+                loginForm.classList.remove('active');
+            }
+        }
+
+        function handleSignup(event) {
+            event.preventDefault();
+            hideMessages();
+            
+            const username = document.getElementById('signupUsername').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupPasswordConfirm').value;
+            
+            if (password !== confirmPassword) {
+                showError('Passwords do not match!');
+                return;
+            }
+            
+            // Check if username already exists
+            const accounts = JSON.parse(localStorage.getItem('obrienAccounts') || '{}');
+            if (accounts[username]) {
+                showError('Username already exists!');
+                return;
+            }
+            
+            // Create new account
+            accounts[username] = {
+                password: password,
+                createdAt: new Date().toISOString()
+            };
+            
+            localStorage.setItem('obrienAccounts', JSON.stringify(accounts));
+            
+            showSuccess('Account created successfully! You can now login.');
+            
+            // Clear form
+            document.getElementById('signupForm').reset();
+            
+            // Switch to login tab after 1.5 seconds
+            setTimeout(() => {
+                switchTab('login');
+            }, 1500);
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            hideMessages();
+            
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const accounts = JSON.parse(localStorage.getItem('obrienAccounts') || '{}');
+            
+            if (!accounts[username]) {
+                showError('Account not found!');
+                return;
+            }
+            
+            if (accounts[username].password !== password) {
+                showError('Incorrect password!');
+                return;
+            }
+            
+            // Login successful
+            currentUser = username;
+            localStorage.setItem('currentUser', username);
+            
+            // Load user's saved progress
+            loadProgress();
+            
+            // If Brecken and no title set, set Creator as default
+            if (currentUser.toLowerCase() === 'brecken' && !selectedTitle) {
+                selectedTitle = 'creator';
+            }
+            
+            // Clear form
+            document.getElementById('loginForm').reset();
+            
+            // Immediately switch to profile view
+            hideMessages();
+            showLoggedInView();
+            startAutoSave();
+            showLoggedInHeader();
+        }
+
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout? Your progress is saved.')) {
+                saveProgress();
+                localStorage.removeItem('currentUser');
+                currentUser = null;
+                
+                // Stop auto-save
+                if (autoSaveInterval) {
+                    clearInterval(autoSaveInterval);
+                }
+                
+                showAuthView();
+                closeAccount();
+                hideLoggedInHeader();
+                
+                // Reset game to default state
+                resetGameState();
+            }
+        }
+
+        function checkLoggedInUser() {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                const accounts = JSON.parse(localStorage.getItem('obrienAccounts') || '{}');
+                if (accounts[savedUser]) {
+                    currentUser = savedUser;
+                    loadProgress();
+                    startAutoSave();
+                    showLoggedInHeader();
+                }
+            }
+        }
+
+        function saveProgress() {
+            if (!currentUser) return;
+            
+            const saveData = {
+                points: points,
+                ordersCompleted: ordersCompleted,
+                billOfRightsOwned: billOfRightsOwned,
+                billOfRightsPrice: billOfRightsPrice,
+                pointMultiplier: pointMultiplier,
+                billOfRightsBadgeEarned: billOfRightsBadgeEarned,
+                declarationOwned: declarationOwned,
+                stevenBradleyOwned: stevenBradleyOwned,
+                noahRolandOwned: noahRolandOwned,
+                orderMultiplier: orderMultiplier,
+                hasShownBillOfRights: hasShownBillOfRights,
+                selectedTitle: selectedTitle,
+                lastSaved: new Date().toISOString()
+            };
+            
+            localStorage.setItem(`obrienSave_${currentUser}`, JSON.stringify(saveData));
+            
+            // Update last save time display if profile is open
+            updateLastSaveTime();
+        }
+
+        function loadProgress() {
+            if (!currentUser) return;
+            
+            const saveData = JSON.parse(localStorage.getItem(`obrienSave_${currentUser}`));
+            
+            if (saveData) {
+                points = saveData.points || 0;
+                ordersCompleted = saveData.ordersCompleted || 0;
+                billOfRightsOwned = saveData.billOfRightsOwned || 0;
+                billOfRightsPrice = saveData.billOfRightsPrice || 10;
+                pointMultiplier = saveData.pointMultiplier || 1;
+                billOfRightsBadgeEarned = saveData.billOfRightsBadgeEarned || false;
+                declarationOwned = saveData.declarationOwned || false;
+                stevenBradleyOwned = saveData.stevenBradleyOwned || false;
+                noahRolandOwned = saveData.noahRolandOwned || false;
+                orderMultiplier = saveData.orderMultiplier || 1;
+                hasShownBillOfRights = saveData.hasShownBillOfRights || false;
+                selectedTitle = saveData.selectedTitle || getDefaultTitle();
+                
+                // Update display
+                document.getElementById('points').textContent = points;
+                document.getElementById('orders').textContent = ordersCompleted;
+                
+                // Restore Bill of Rights badge if earned
+                if (billOfRightsBadgeEarned) {
+                    addBillOfRightsBadge();
+                }
+                
+                // Restore Bill of Rights icons
+                updateBORIcons();
+                
+                // Restart declaration bot if owned
+                if (declarationOwned) {
+                    startDeclarationBot();
+                    addDeclarationBadge();
+                    document.getElementById('doiButton').disabled = true;
+                    document.getElementById('doiButton').textContent = 'OWNED';
+                }
+                updateBotsDisplay();
+                
+                // Restart Steven Bradley sound if owned
+                if (stevenBradleyOwned) {
+                    startStevenSound();
+                    document.getElementById('stevenButton').disabled = true;
+                    document.getElementById('stevenButton').textContent = 'OWNED';
+                }
+                
+                // Restore Noah Roland badge
+                if (noahRolandOwned) {
+                    addNoahBadge();
+                    document.getElementById('noahButton').disabled = true;
+                    document.getElementById('noahButton').textContent = 'OWNED';
+                }
+                
+                updateShopDisplay();
+                updateTitleDisplay();
+            } else {
+                // New player - set default title
+                selectedTitle = getDefaultTitle();
+                updateTitleDisplay();
+            }
+        }
+
+        function resetGameState() {
+            // Clear declaration bot
+            if (declarationBotInterval) {
+                clearInterval(declarationBotInterval);
+                declarationBotInterval = null;
+            }
+            
+            // Clear Steven sound
+            if (stevenInterval) {
+                clearInterval(stevenInterval);
+                stevenInterval = null;
+            }
+            
+            // Reset all values
+            points = 0;
+            ordersCompleted = 0;
+            billOfRightsOwned = 0;
+            billOfRightsPrice = 10;
+            pointMultiplier = 1;
+            billOfRightsBadgeEarned = false;
+            declarationOwned = false;
+            stevenBradleyOwned = false;
+            noahRolandOwned = false;
+            orderMultiplier = 1;
+            hasShownBillOfRights = false;
+            currentOrder = null;
+            selectedTitle = null;
+            
+            // Update display
+            document.getElementById('points').textContent = points;
+            document.getElementById('orders').textContent = ordersCompleted;
+            document.getElementById('borIcons').innerHTML = '';
+            document.getElementById('botsSection').style.display = 'none';
+            document.getElementById('achievementsSection').style.display = 'none';
+            document.getElementById('badgesContainer').innerHTML = '';
+            document.getElementById('orderDisplay').innerHTML = '';
+            document.getElementById('stevenButton').disabled = false;
+            document.getElementById('stevenButton').textContent = 'Buy';
+            document.getElementById('noahButton').disabled = false;
+            document.getElementById('noahButton').textContent = 'Buy';
+            document.getElementById('doiButton').disabled = false;
+            document.getElementById('doiButton').textContent = 'Buy';
+            document.getElementById('makeButton').disabled = false;
+            document.getElementById('completeButton').disabled = true;
+        }
+
+        function startAutoSave() {
+            // Auto-save every 10 seconds
+            autoSaveInterval = setInterval(() => {
+                saveProgress();
+            }, 10000);
+        }
+
+        function showLoggedInView() {
+            document.getElementById('authView').classList.remove('active');
+            document.getElementById('loggedInView').classList.add('active');
+            document.getElementById('currentUsername').textContent = currentUser;
+            
+            // Show Brecken badge if applicable
+            if (currentUser && currentUser.toLowerCase() === 'brecken') {
+                document.getElementById('breckenBadge').style.display = 'inline-block';
+            } else {
+                document.getElementById('breckenBadge').style.display = 'none';
+            }
+            
+            updateTitleDisplay();
+            updateUserStats();
+        }
+
+        function showAuthView() {
+            document.getElementById('loggedInView').classList.remove('active');
+            document.getElementById('authView').classList.add('active');
+            hideMessages();
+        }
+
+        function updateUserStats() {
+            // Update basic stats
+            document.getElementById('userPoints').textContent = points;
+            document.getElementById('userOrders').textContent = ordersCompleted;
+            
+            // Update multipliers
+            document.getElementById('userPointMult').textContent = pointMultiplier + 'x';
+            document.getElementById('userOrderMult').textContent = orderMultiplier + 'x';
+            
+            // Update owned items
+            updateOwnedItems();
+            
+            // Update achievements
+            updateProfileAchievements();
+            
+            // Update last save time
+            updateLastSaveTime();
+            
+            // Update member since
+            updateMemberSince();
+            
+            // Update title display (in case new titles unlocked)
+            updateTitleDisplay();
+        }
+
+        function updateOwnedItems() {
+            const itemsList = document.getElementById('ownedItemsList');
+            itemsList.innerHTML = '';
+            
+            let hasItems = false;
+            
+            if (billOfRightsOwned > 0) {
+                hasItems = true;
+                const item = document.createElement('div');
+                item.className = 'owned-item';
+                item.innerHTML = `
+                    <span class="item-name">📜 Bill of Rights</span>
+                    <span class="item-count">x${billOfRightsOwned}</span>
+                `;
+                itemsList.appendChild(item);
+            }
+            
+            if (declarationOwned) {
+                hasItems = true;
+                const item = document.createElement('div');
+                item.className = 'owned-item';
+                item.innerHTML = `
+                    <span class="item-name">📃 Declaration of Independence</span>
+                    <span class="item-count">✓ OWNED</span>
+                `;
+                itemsList.appendChild(item);
+            }
+            
+            if (stevenBradleyOwned) {
+                hasItems = true;
+                const item = document.createElement('div');
+                item.className = 'owned-item';
+                item.innerHTML = `
+                    <span class="item-name">🔊 Steven Bradley</span>
+                    <span class="item-count">✓ OWNED</span>
+                `;
+                itemsList.appendChild(item);
+            }
+            
+            if (noahRolandOwned) {
+                hasItems = true;
+                const item = document.createElement('div');
+                item.className = 'owned-item';
+                item.innerHTML = `
+                    <span class="item-name">🏅 Noah Roland Badge</span>
+                    <span class="item-count">✓ UNLOCKED</span>
+                `;
+                itemsList.appendChild(item);
+            }
+            
+            if (!hasItems) {
+                itemsList.innerHTML = '<p style="color: #999; text-align: center;">No items purchased yet</p>';
+            }
+        }
+
+        function updateProfileAchievements() {
+            const achievementsProfile = document.getElementById('achievementsProfile');
+            const profileBadges = document.getElementById('profileBadges');
+            
+            let badges = '';
+            
+            if (billOfRightsBadgeEarned) {
+                badges += `
+                    <div class="badge">
+                        <span class="badge-icon">📜</span>
+                        <span>Constitutional Scholar</span>
+                    </div>
+                `;
+            }
+            
+            if (declarationOwned) {
+                badges += `
+                    <div class="badge">
+                        <span class="badge-icon">📃</span>
+                        <span>Founding Father</span>
+                    </div>
+                `;
+            }
+            
+            if (noahRolandOwned) {
+                badges += `
+                    <div class="badge">
+                        <span class="badge-icon">🏅</span>
+                        <span>Noah Roland</span>
+                    </div>
+                `;
+            }
+            
+            if (badges) {
+                achievementsProfile.style.display = 'block';
+                profileBadges.innerHTML = badges;
+            } else {
+                achievementsProfile.style.display = 'none';
+            }
+        }
+
+        function updateLastSaveTime() {
+            const saveData = JSON.parse(localStorage.getItem(`obrienSave_${currentUser}`));
+            if (saveData && saveData.lastSaved) {
+                const lastSaved = new Date(saveData.lastSaved);
+                const now = new Date();
+                const diffSeconds = Math.floor((now - lastSaved) / 1000);
+                
+                let timeText;
+                if (diffSeconds < 60) {
+                    timeText = 'Just now';
+                } else if (diffSeconds < 3600) {
+                    const minutes = Math.floor(diffSeconds / 60);
+                    timeText = `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+                } else if (diffSeconds < 86400) {
+                    const hours = Math.floor(diffSeconds / 3600);
+                    timeText = `${hours} hour${hours > 1 ? 's' : ''} ago`;
+                } else {
+                    timeText = lastSaved.toLocaleDateString() + ' ' + lastSaved.toLocaleTimeString();
+                }
+                
+                document.getElementById('lastSaveTime').textContent = timeText;
+            } else {
+                document.getElementById('lastSaveTime').textContent = 'Never';
+            }
+        }
+
+        function updateMemberSince() {
+            const accounts = JSON.parse(localStorage.getItem('obrienAccounts') || '{}');
+            if (accounts[currentUser] && accounts[currentUser].createdAt) {
+                const createdDate = new Date(accounts[currentUser].createdAt);
+                document.getElementById('memberSince').textContent = 'Member since: ' + createdDate.toLocaleDateString();
+            } else {
+                document.getElementById('memberSince').textContent = 'Member since: Unknown';
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+        }
+
+        function hideMessages() {
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        function showLoggedInHeader() {
+            const status = document.getElementById('loggedInStatus');
+            const username = document.getElementById('headerUsername');
+            status.classList.add('active');
+            username.textContent = currentUser;
+        }
+
+        function hideLoggedInHeader() {
+            const status = document.getElementById('loggedInStatus');
+            status.classList.remove('active');
+        }
+
+        // Title system functions
+        function openTitleSelector() {
+            document.getElementById('titleModal').style.display = 'block';
+            renderTitles();
+        }
+
+        function closeTitleSelector() {
+            document.getElementById('titleModal').style.display = 'none';
+        }
+
+        function renderTitles() {
+            const titlesList = document.getElementById('titlesList');
+            titlesList.innerHTML = '';
+            
+            titles.forEach(title => {
+                const isUnlocked = isTitleUnlocked(title);
+                const isSelected = selectedTitle === title.id;
+                const isBrecken = currentUser && currentUser.toLowerCase() === 'brecken';
+                
+                // Show Creator title only for Brecken
+                if (title.id === 'creator' && !isBrecken) {
+                    return;
+                }
+                
+                const titleItem = document.createElement('div');
+                titleItem.className = `title-item ${isSelected ? 'selected' : ''} ${!isUnlocked ? 'locked' : ''}`;
+                
+                if (isUnlocked) {
+                    titleItem.onclick = () => selectTitle(title.id);
+                }
+                
+                titleItem.innerHTML = `
+                    <div class="title-item-header">
+                        <span class="title-name">${title.name}</span>
+                        <span class="title-badge ${!isUnlocked ? 'locked-badge' : ''}">${isSelected ? 'EQUIPPED' : (isUnlocked ? 'UNLOCKED' : 'LOCKED')}</span>
+                    </div>
+                    <div class="title-requirement">${title.requirementText}</div>
+                `;
+                
+                titlesList.appendChild(titleItem);
+            });
+        }
+
+        function isTitleUnlocked(title) {
+            if (title.id === 'none') return true;
+            if (title.id === 'creator') {
+                return currentUser && currentUser.toLowerCase() === 'brecken';
+            }
+            return ordersCompleted >= title.requirement;
+        }
+
+        function selectTitle(titleId) {
+            const title = titles.find(t => t.id === titleId);
+            if (!title || !isTitleUnlocked(title)) return;
+            
+            selectedTitle = titleId;
+            updateTitleDisplay();
+            renderTitles();
+            saveProgress();
+        }
+
+        function updateTitleDisplay() {
+            const titleDisplay = document.getElementById('userTitleDisplay');
+            const title = titles.find(t => t.id === selectedTitle);
+            
+            if (title && title.id !== 'none') {
+                titleDisplay.textContent = `"${title.name}" - Click to change title`;
+                titleDisplay.style.color = '#9c27b0';
+            } else {
+                titleDisplay.textContent = 'Click to select a title';
+                titleDisplay.style.color = '#999';
+            }
+        }
+
+        function getDefaultTitle() {
+            // Brecken gets Creator by default
+            if (currentUser && currentUser.toLowerCase() === 'brecken') {
+                return 'creator';
+            }
+            return 'none';
+        }
+
+        // Leaderboard functions
+        function openLeaderboard() {
+            document.getElementById('leaderboardModal').style.display = 'block';
+            loadLeaderboard();
+        }
+
+        function closeLeaderboard() {
+            document.getElementById('leaderboardModal').style.display = 'none';
+        }
+
+        function loadLeaderboard() {
+            const leaderboardBody = document.getElementById('leaderboardBody');
+            leaderboardBody.innerHTML = '';
+
+            // Get all accounts
+            const accounts = JSON.parse(localStorage.getItem('obrienAccounts') || '{}');
+            const leaderboardData = [];
+
+            // Collect data from all accounts
+            for (const username in accounts) {
+                const saveData = JSON.parse(localStorage.getItem(`obrienSave_${username}`) || '{}');
+                
+                leaderboardData.push({
+                    username: username,
+                    orders: saveData.ordersCompleted || 0,
+                    points: saveData.points || 0,
+                    title: saveData.selectedTitle || 'none'
+                });
+            }
+
+            // Sort by orders (descending)
+            leaderboardData.sort((a, b) => b.orders - a.orders);
+
+            // Take top 50
+            const top50 = leaderboardData.slice(0, 50);
+
+            if (top50.length === 0) {
+                leaderboardBody.innerHTML = '<tr><td colspan="4" class="no-data-message">No players yet! Be the first to join!</td></tr>';
+                return;
+            }
+
+            // Render leaderboard
+            top50.forEach((player, index) => {
+                const rank = index + 1;
+                const isCurrentUser = currentUser && player.username === currentUser;
+                
+                let rankClass = '';
+                let trophyIcon = '';
+                if (rank === 1) {
+                    rankClass = 'rank-1';
+                    trophyIcon = '🥇 ';
+                } else if (rank === 2) {
+                    rankClass = 'rank-2';
+                    trophyIcon = '🥈 ';
+                } else if (rank === 3) {
+                    rankClass = 'rank-3';
+                    trophyIcon = '🥉 ';
+                }
+
+                const titleObj = titles.find(t => t.id === player.title);
+                const titleDisplay = titleObj && titleObj.id !== 'none' 
+                    ? `<span class="leaderboard-title">"${titleObj.name}"</span>` 
+                    : '';
+
+                const row = document.createElement('tr');
+                if (isCurrentUser) {
+                    row.className = 'current-user-row';
+                }
+
+                row.innerHTML = `
+                    <td class="${rankClass}">
+                        <span class="leaderboard-rank">
+                            <span class="trophy-icon">${trophyIcon}</span>${rank}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="leaderboard-username">${escapeHtml(player.username)}</span>
+                        ${titleDisplay}
+                        ${isCurrentUser ? ' <strong style="color: #2196f3;">(You)</strong>' : ''}
+                    </td>
+                    <td><strong>${player.orders.toLocaleString()}</strong></td>
+                    <td>${player.points.toLocaleString()}</td>
+                `;
+
+                leaderboardBody.appendChild(row);
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
