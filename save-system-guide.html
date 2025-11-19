@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Save System Guide - Emmett O'Brien Simulator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            line-height: 1.6;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #c8102e;
+            border-bottom: 3px solid #ffc72c;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2196f3;
+            margin-top: 30px;
+        }
+        .step {
+            background: #e3f2fd;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #2196f3;
+            border-radius: 5px;
+        }
+        .important {
+            background: #fff8e1;
+            padding: 15px;
+            border-left: 4px solid #ffc107;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .code {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            overflow-x: auto;
+        }
+        button {
+            background: #4caf50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .secondary-btn {
+            background: #2196f3;
+        }
+        .secondary-btn:hover {
+            background: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍔 Emmett O'Brien Simulator - Save System Guide</h1>
+        
+        <h2>🎮 Quick Start</h2>
+        <p>This game uses <strong>localStorage</strong> for automatic saving, plus an <strong>export/import system</strong> for cross-platform play!</p>
+        
+        <div class="step">
+            <strong>Step 1:</strong> Play the game - your progress saves automatically every 10 seconds
+        </div>
+        
+        <div class="step">
+            <strong>Step 2:</strong> Want to play on another device? Export your save file
+        </div>
+        
+        <div class="step">
+            <strong>Step 3:</strong> Import the save file on your new device
+        </div>
+        
+        <h2>📥 How to Export Your Save</h2>
+        <ol>
+            <li>Log into your account</li>
+            <li>Click the <strong>👤 ACCOUNT</strong> button</li>
+            <li>Scroll down to "Save Information"</li>
+            <li>Click <strong>📥 Export Save Data</strong></li>
+            <li>A <code>.json</code> file will download</li>
+            <li>Keep this file safe!</li>
+        </ol>
+        
+        <h2>📤 How to Import Your Save</h2>
+        <ol>
+            <li>Open the game on your new device</li>
+            <li>Click <strong>👤 ACCOUNT</strong></li>
+            <li>Click <strong>📤 Import Save Data</strong> (works on login screen too!)</li>
+            <li>Select your <code>.json</code> save file</li>
+            <li>Choose to overwrite or create a new account</li>
+            <li>Log in and continue playing!</li>
+        </ol>
+        
+        <div class="important">
+            <strong>⚠️ Important:</strong> Save files are NOT encrypted. Anyone with your file can see your progress. Store them securely!
+        </div>
+        
+        <h2>🌐 Why Export/Import Instead of Auto-Sync?</h2>
+        <p>GitHub Pages only serves static files - it can't run a backend server or database. Here are your options:</p>
+        
+        <ul>
+            <li><strong>Export/Import</strong> - Simple, works offline, you control your data</li>
+            <li><strong>Firebase/Cloud DB</strong> - Would require API keys and external services</li>
+            <li><strong>Browser Sync</strong> - Only works if you use the same browser account on all devices</li>
+        </ul>
+        
+        <p>We chose export/import because it's simple, secure, and doesn't require any external services!</p>
+        
+        <h2>💾 What's Saved in the File?</h2>
+        <ul>
+            <li>✅ Username and account info</li>
+            <li>✅ O'Brien Points, Gems, Orders Completed</li>
+            <li>✅ All shop purchases and upgrades</li>
+            <li>✅ Multipliers and bonuses</li>
+            <li>✅ Selected title and badges</li>
+            <li>✅ Bot status (Declaration bot, etc.)</li>
+        </ul>
+        
+        <h2>🔧 Troubleshooting</h2>
+        
+        <div class="step">
+            <strong>Can't import file:</strong> Make sure it's a <code>.json</code> file exported from this game
+        </div>
+        
+        <div class="step">
+            <strong>Lost my save:</strong> If you didn't export it, saves only exist in that browser's localStorage
+        </div>
+        
+        <div class="step">
+            <strong>Cleared browser data:</strong> localStorage is deleted when you clear browser data - always export first!
+        </div>
+        
+        <h2>📱 Best Practices</h2>
+        <ul>
+            <li>Export your save regularly (daily if you play often)</li>
+            <li>Store saves in cloud storage (Google Drive, Dropbox, etc.)</li>
+            <li>Keep multiple backup copies</li>
+            <li>Export before clearing browser data</li>
+            <li>Name files with username and date: <code>obrien-save-Player1-2025-01-15.json</code></li>
+        </ul>
+        
+        <h2>🎮 Ready to Play?</h2>
+        <a href="emmett-obrien-simulator.html"><button>🍔 Play Game</button></a>
+        <a href="SAVE_SYSTEM_README.md"><button class="secondary-btn">📖 Full Documentation</button></a>
+        
+        <hr style="margin: 40px 0;">
+        
+        <p style="text-align: center; color: #666;">
+            <small>Emmett O'Brien Simulator © 2025 | Built for GitHub Pages</small>
+        </p>
+    </div>
+</body>
+</html>
