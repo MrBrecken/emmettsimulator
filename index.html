@@ -1286,7 +1286,7 @@
                             <span class="price" id="borPrice">10 Points</span>
                             <button class="buy-button" onclick="buyBillOfRights()">Buy</button>
                         </div>
-                        <small style="color: #666; display: block; margin-top: 10px;">Owned: <span id="borCount">0</span></small>
+                        <small style="color: #2196f3; display: block; margin-top: 10px; font-weight: bold; font-size: 1em;">Owned: <span id="borCount">0</span></small>
                     </div>
 
                     <div class="shop-item">
@@ -1323,7 +1323,7 @@
                             <span class="price" id="articlesPrice">10K Points</span>
                             <button class="buy-button" onclick="buyArticles()">Buy</button>
                         </div>
-                        <small style="color: #666; display: block; margin-top: 10px;">Owned: <span id="articlesCount">0</span></small>
+                        <small style="color: #2196f3; display: block; margin-top: 10px; font-weight: bold; font-size: 1em;">Owned: <span id="articlesCount">0</span></small>
                     </div>
 
                     <div class="shop-item">
@@ -1346,7 +1346,7 @@
                             <span class="gem-price" id="franksPrice">5 Gems</span>
                             <button class="buy-button" onclick="buyFranks()">Buy</button>
                         </div>
-                        <small style="color: #666; display: block; margin-top: 10px;">Owned: <span id="franksCount">0</span></small>
+                        <small style="color: #9c27b0; display: block; margin-top: 10px; font-weight: bold; font-size: 1em;">Owned: <span id="franksCount">0</span></small>
                     </div>
 
                     <div class="gem-shop-item">
@@ -1931,7 +1931,7 @@
                 points -= billOfRightsPrice;
                 billOfRightsOwned++;
                 pointMultiplier *= 2;
-                billOfRightsPrice = Math.floor(billOfRightsPrice * 5);
+                billOfRightsPrice = Math.floor(billOfRightsPrice * 2);
                 
                 // Award badge on first purchase
                 if (!billOfRightsBadgeEarned) {
@@ -2116,26 +2116,15 @@
         }
 
         function startStevenSound() {
-            // Create audio context for annoying beep
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            // TODO: Upload your mp3 file and update the path below
+            // Place your mp3 file in the same directory as this HTML file
+            const audioPath = 'your-sound-file.mp3'; // UPDATE THIS WITH YOUR MP3 FILENAME
             
             stevenInterval = setInterval(() => {
-                // Create oscillator for annoying beep sound
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.frequency.value = 800; // Annoying frequency
-                oscillator.type = 'square'; // Harsh square wave
-                
-                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.5);
-            }, 5000);
+                const audio = new Audio(audioPath);
+                audio.volume = 0.5; // Adjust volume (0.0 to 1.0)
+                audio.play().catch(err => console.log('Audio play failed:', err));
+            }, 5000); // Play every 5 seconds
         }
 
         function buyNoah() {
@@ -2484,6 +2473,9 @@
                     ${gemText}
                 </div>
             `;
+
+            document.getElementById('completeButton2').disabled = true;
+            document.getElementById('makeButton2').disabled = false;
 
             document.getElementById('completeButton2').disabled = true;
             document.getElementById('makeButton2').disabled = false;
