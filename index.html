@@ -1729,6 +1729,19 @@
                             </button>
                         </div>
                     </div>
+                    
+                    <div style="background: #f8f8f8; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                        <h5 style="margin-bottom: 10px; color: #333;">Reset User Upgrades</h5>
+                        <p style="color: #666; font-size: 0.9em; margin-bottom: 10px;">Enter a username to reset ALL their shop upgrades (keeps points and orders):</p>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="adminResetUpgradesUsername" placeholder="Username..." 
+                                style="flex: 1; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 1em;">
+                            <button onclick="adminResetUserUpgrades()" 
+                                style="padding: 10px 20px; background: #ff9800; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                                🔄 Reset Upgrades
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <button class="logout-button" onclick="handleLogout()">Logout</button>
@@ -4311,6 +4324,119 @@
             
             alert(`✅ SUCCESS!\n\nUser "${targetUsername}" points have been reset to 0!`);
             document.getElementById('adminResetUsername').value = '';
+        }
+
+        function adminResetUserUpgrades() {
+            // Verify admin access
+            if (!currentUser || currentUser.toLowerCase() !== 'brecken') {
+                alert('⛔ Access Denied: Admin privileges required!');
+                return;
+            }
+            
+            const targetUsername = document.getElementById('adminResetUpgradesUsername').value.trim();
+            
+            if (!targetUsername) {
+                alert('❌ Please enter a username!');
+                return;
+            }
+            
+            // Check if user exists
+            const accounts = JSON.parse(localStorage.getItem('obrienAccounts') || '{}');
+            if (!accounts[targetUsername]) {
+                alert(`❌ User "${targetUsername}" does not exist!`);
+                return;
+            }
+            
+            // Confirm action
+            const confirmed = confirm(
+                `⚠️ ADMIN ACTION ⚠️\n\n` +
+                `Are you sure you want to reset ALL UPGRADES for user "${targetUsername}"?\n\n` +
+                `This will reset:\n` +
+                `- All Bill of Rights\n` +
+                `- All Articles of Confederation\n` +
+                `- All Stamp Acts\n` +
+                `- All World War I upgrades\n` +
+                `- Declaration of Independence\n` +
+                `- BTD1 and gems\n` +
+                `- All multipliers\n` +
+                `- All shop items and badges\n\n` +
+                `Their points and orders completed will NOT be affected.\n\n` +
+                `This action cannot be undone!`
+            );
+            
+            if (!confirmed) {
+                return;
+            }
+            
+            // Load user's save data
+            const saveKey = `obrienSave_${targetUsername}`;
+            const saveData = JSON.parse(localStorage.getItem(saveKey) || '{}');
+            
+            if (!saveData || Object.keys(saveData).length === 0) {
+                alert(`❌ No save data found for "${targetUsername}"!`);
+                return;
+            }
+            
+            // Keep only points and orders, reset everything else
+            const pointsBackup = saveData.points || 0;
+            const ordersBackup = saveData.ordersCompleted || 0;
+            const titleBackup = saveData.selectedTitle || 'none';
+            
+            // Reset all shop items and multipliers
+            saveData.billOfRightsOwned = 0;
+            saveData.billOfRightsPrice = 10;
+            saveData.pointMultiplier = 1;
+            saveData.billOfRightsBadgeEarned = false;
+            saveData.declarationOwned = false;
+            saveData.articlesOwned = 0;
+            saveData.articlesPrice = 10000;
+            saveData.articlesMultiplier = 1;
+            saveData.stampActOwned = 0;
+            saveData.stampActPrice = 50000;
+            saveData.stampActBoost = 0;
+            saveData.ww1Owned = 0;
+            saveData.ww1Price = 2000;
+            saveData.ww1PointsPerOrder = 0;
+            saveData.btd1Owned = false;
+            saveData.gemChance = 0;
+            saveData.gems = 0;
+            saveData.stevenBradleyOwned = false;
+            saveData.noahRolandOwned = false;
+            saveData.orderMultiplier = 1;
+            saveData.franksKFCOwned = 0;
+            saveData.franksKFCPrice = 5;
+            saveData.gemMultiplier = 1;
+            saveData.franksKFCBadgeEarned = false;
+            saveData.kevinBaldHeadOwned = false;
+            saveData.kevinBaldHeadBadgeEarned = false;
+            
+            // Restore points, orders, and title
+            saveData.points = pointsBackup;
+            saveData.ordersCompleted = ordersBackup;
+            saveData.selectedTitle = titleBackup;
+            
+            // Save back to localStorage
+            localStorage.setItem(saveKey, JSON.stringify(saveData));
+            
+            // If this is the current user, force reload their data
+            if (currentUser === targetUsername) {
+                alert(`✅ SUCCESS!\n\nYour upgrades have been reset! The page will reload to apply changes.`);
+                location.reload();
+                return;
+            }
+            
+            // Sync to Firebase if enabled
+            if (firebaseEnabled && database) {
+                try {
+                    const sanitizedUsername = targetUsername.replace(/[.#$[\]]/g, '_');
+                    database.ref('leaderboard/' + sanitizedUsername + '/gems').set(0);
+                } catch (error) {
+                    console.error('Failed to sync to Firebase:', error);
+                }
+            }
+            
+            alert(`✅ SUCCESS!\n\nUser "${targetUsername}" upgrades have been reset!\n\nTheir points (${formatNumber(pointsBackup)}) and orders (${formatNumber(ordersBackup)}) were preserved.`);
+            document.getElementById('adminResetUpgradesUsername').value = '';
         }
 
         // Export/Import Save Data Functions
