@@ -2339,6 +2339,14 @@
                 // Show second order area
                 document.getElementById('secondOrderArea').style.display = 'block';
                 
+                // Initialize the second order display
+                document.getElementById('orderDisplay2').innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: #666;">
+                        <p style="font-size: 1.2em;">🚀 Second Order Station Ready!</p>
+                        <p>Click "Start New Order" to begin</p>
+                    </div>
+                `;
+                
                 // Add badge
                 if (!kevinBaldHeadBadgeEarned) {
                     kevinBaldHeadBadgeEarned = true;
@@ -2378,7 +2386,9 @@
 
         // Second order area functions
         function startMakingOrder2() {
-            currentOrder2 = generateOrder();
+            if (currentOrder2) return;
+            
+            currentOrder2 = generateRandomOrder();
             progress2 = 0;
             
             document.getElementById('makeButton2').disabled = true;
@@ -2796,6 +2806,16 @@
                     document.getElementById('kevinButton').disabled = true;
                     document.getElementById('kevinButton').textContent = 'OWNED';
                     addKevinBadge();
+                    
+                    // Initialize the second order display if not already in progress
+                    if (!currentOrder2) {
+                        document.getElementById('orderDisplay2').innerHTML = `
+                            <div style="text-align: center; padding: 20px; color: #666;">
+                                <p style="font-size: 1.2em;">🚀 Second Order Station Ready!</p>
+                                <p>Click "Start New Order" to begin</p>
+                            </div>
+                        `;
+                    }
                 }
                 
                 updateShopDisplay();
