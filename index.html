@@ -1708,6 +1708,29 @@
                     </div>
                 </div>
 
+                <!-- Admin Panel (Only visible to Brecken) -->
+                <div class="profile-section" id="adminPanel" style="display: none;">
+                    <h4 style="color: #c8102e;">🔒 ADMIN PANEL</h4>
+                    <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #c8102e; margin-bottom: 15px;">
+                        <p style="color: #856404; margin: 0; font-size: 0.9em;">
+                            <strong>⚠️ Admin Access:</strong> You have special privileges as the creator of this game.
+                        </p>
+                    </div>
+                    
+                    <div style="background: #f8f8f8; padding: 15px; border-radius: 8px;">
+                        <h5 style="margin-bottom: 10px; color: #333;">Reset User Points</h5>
+                        <p style="color: #666; font-size: 0.9em; margin-bottom: 10px;">Enter a username to reset their points to 0:</p>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="adminResetUsername" placeholder="Username..." 
+                                style="flex: 1; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 1em;">
+                            <button onclick="adminResetUserPoints()" 
+                                style="padding: 10px 20px; background: #c8102e; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                                🗑️ Reset Points
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <button class="logout-button" onclick="handleLogout()">Logout</button>
                 <button class="close-button" onclick="closeAccount()">Close</button>
             </div>
@@ -2648,7 +2671,13 @@
                 points -= articlesPrice;
                 articlesOwned++;
                 articlesMultiplier *= 1.25; // 125% multiplier
-                articlesPrice += 10000;
+                
+                // Every 10 purchases, multiply price by 10, otherwise add 10K
+                if (articlesOwned % 10 === 0) {
+                    articlesPrice = Math.floor(articlesPrice * 10);
+                } else {
+                    articlesPrice += 10000;
+                }
                 
                 document.getElementById('points').textContent = formatNumber(points);
                 updateShopDisplay();
@@ -2750,7 +2779,14 @@
                 points -= articlesPrice;
                 articlesOwned++;
                 articlesMultiplier *= 1.25;
-                articlesPrice += 10000;
+                
+                // Every 10 purchases, multiply price by 10, otherwise add 10K
+                if (articlesOwned % 10 === 0) {
+                    articlesPrice = Math.floor(articlesPrice * 10);
+                } else {
+                    articlesPrice += 10000;
+                }
+                
                 purchased++;
             }
             
@@ -3575,8 +3611,10 @@
             // Show Brecken badge if applicable
             if (currentUser && currentUser.toLowerCase() === 'brecken') {
                 document.getElementById('breckenBadge').style.display = 'inline-block';
+                document.getElementById('adminPanel').style.display = 'block';
             } else {
                 document.getElementById('breckenBadge').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'none';
             }
             
             updateTitleDisplay();
@@ -4199,6 +4237,80 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+
+        // ==========================================
+        // ADMIN FUNCTIONS (Brecken Only)
+        // ==========================================
+        
+        function adminResetUserPoints() {
+            // Verify admin access
+            if (!currentUser || currentUser.toLowerCase() !== 'brecken') {
+                alert('⛔ Access Denied: Admin privileges required!');
+                return;
+            }
+            
+            const targetUsername = document.getElementById('adminResetUsername').value.trim();
+            
+            if (!targetUsername) {
+                alert('❌ Please enter a username!');
+                return;
+            }
+            
+            // Check if user exists
+            const accounts = JSON.parse(localStorage.getItem('obrienAccounts') || '{}');
+            if (!accounts[targetUsername]) {
+                alert(`❌ User "${targetUsername}" does not exist!`);
+                return;
+            }
+            
+            // Confirm action
+            const confirmed = confirm(
+                `⚠️ ADMIN ACTION ⚠️\n\n` +
+                `Are you sure you want to reset ALL POINTS for user "${targetUsername}"?\n\n` +
+                `This will set their O'Brien Points to 0!\n\n` +
+                `This action cannot be undone!`
+            );
+            
+            if (!confirmed) {
+                return;
+            }
+            
+            // Load user's save data
+            const saveKey = `obrienSave_${targetUsername}`;
+            const saveData = JSON.parse(localStorage.getItem(saveKey) || '{}');
+            
+            if (!saveData || Object.keys(saveData).length === 0) {
+                alert(`❌ No save data found for "${targetUsername}"!`);
+                return;
+            }
+            
+            // Reset only the points
+            saveData.points = 0;
+            
+            // Save back to localStorage
+            localStorage.setItem(saveKey, JSON.stringify(saveData));
+            
+            // If this is the current user, update their display
+            if (currentUser === targetUsername) {
+                points = 0;
+                document.getElementById('points').textContent = '0';
+                document.getElementById('userPoints').textContent = '0';
+                saveProgress();
+            }
+            
+            // Sync to Firebase if enabled
+            if (firebaseEnabled && database) {
+                try {
+                    const sanitizedUsername = targetUsername.replace(/[.#$[\]]/g, '_');
+                    database.ref('leaderboard/' + sanitizedUsername + '/points').set(0);
+                } catch (error) {
+                    console.error('Failed to sync to Firebase:', error);
+                }
+            }
+            
+            alert(`✅ SUCCESS!\n\nUser "${targetUsername}" points have been reset to 0!`);
+            document.getElementById('adminResetUsername').value = '';
         }
 
         // Export/Import Save Data Functions
