@@ -262,6 +262,33 @@
             box-shadow: 0 8px 25px rgba(96, 125, 139, 0.6);
         }
 
+        .rebirth-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #e91e63 0%, #c2185b 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            box-shadow: 0 5px 20px rgba(233, 30, 99, 0.4);
+            z-index: 100;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .rebirth-button:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(233, 30, 99, 0.6);
+        }
+
+        .rebirth-button:disabled {
+            background: linear-gradient(135deg, #999 0%, #777 100%);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
         .leaderboard-modal {
             display: none;
             position: fixed;
@@ -551,6 +578,146 @@
             gap: 10px;
             margin: 5px 0;
             color: #555;
+        }
+
+        .rebirth-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .rebirth-content {
+            background: white;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 50px rgba(233, 30, 99, 0.5);
+        }
+
+        .rebirth-content h2 {
+            color: #e91e63;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .rebirth-info {
+            background: linear-gradient(135deg, #fff3f8 0%, #ffe8f0 100%);
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 5px solid #e91e63;
+        }
+
+        .rebirth-info h3 {
+            color: #e91e63;
+            margin-bottom: 15px;
+        }
+
+        .rebirth-info p {
+            color: #555;
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .rebirth-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .rebirth-stat-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #e91e63;
+        }
+
+        .rebirth-stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .rebirth-stat-value {
+            color: #e91e63;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .rebirth-action-button {
+            background: linear-gradient(135deg, #e91e63 0%, #c2185b 100%);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 1.3em;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto;
+            transition: all 0.3s ease;
+        }
+
+        .rebirth-action-button:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(233, 30, 99, 0.6);
+        }
+
+        .rebirth-action-button:disabled {
+            background: linear-gradient(135deg, #ccc 0%, #999 100%);
+            cursor: not-allowed;
+        }
+
+        .rebirth-shop-section {
+            margin-top: 30px;
+        }
+
+        .rebirth-shop-section h3 {
+            color: #e91e63;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .rebirth-shop-items {
+            display: grid;
+            gap: 20px;
+        }
+
+        .rebirth-shop-item {
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #e91e63;
+        }
+
+        .rebirth-shop-item h4 {
+            color: #e91e63;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .rebirth-shop-item p {
+            color: #555;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .rebirth-price {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #e91e63;
         }
 
         .account-modal {
@@ -1353,6 +1520,84 @@
     <button class="account-button" onclick="openAccount()">👤 ACCOUNT</button>
     <button class="leaderboard-button" onclick="openLeaderboard()">🏆 LEADERBOARD</button>
     <button class="settings-button" onclick="openSettings()">⚙️ SETTINGS</button>
+    <button class="rebirth-button" id="rebirthButton" onclick="openRebirth()">♻️ REBIRTH</button>
+
+    <!-- Rebirth Modal -->
+    <div class="rebirth-modal" id="rebirthModal">
+        <div class="rebirth-content">
+            <h2>♻️ REBIRTH SYSTEM</h2>
+            
+            <div class="rebirth-info">
+                <h3>What is Rebirth?</h3>
+                <p><strong>Rebirth</strong> allows you to reset your progress and start over with powerful permanent bonuses!</p>
+                <p><strong>When you rebirth:</strong></p>
+                <ul style="margin-left: 20px; line-height: 1.8;">
+                    <li>✅ You keep your Rebirth Points and Rebirth Count</li>
+                    <li>❌ You lose ALL O'Brien Points</li>
+                    <li>❌ You lose ALL Shop Upgrades (Bill of Rights, Declaration, etc.)</li>
+                    <li>❌ You lose ALL Gems and Gem Upgrades</li>
+                    <li>❌ Your Orders Completed resets to 0</li>
+                    <li>✅ Rebirth Shop upgrades are PERMANENT!</li>
+                </ul>
+            </div>
+
+            <div class="rebirth-stats">
+                <div class="rebirth-stat-box">
+                    <div class="rebirth-stat-label">Current O'Brien Points</div>
+                    <div class="rebirth-stat-value" id="rebirthCurrentPoints">0</div>
+                </div>
+                <div class="rebirth-stat-box">
+                    <div class="rebirth-stat-label">Cost to Rebirth</div>
+                    <div class="rebirth-stat-value" id="rebirthCostDisplay">1T</div>
+                </div>
+                <div class="rebirth-stat-box">
+                    <div class="rebirth-stat-label">Total Rebirths</div>
+                    <div class="rebirth-stat-value" id="rebirthCountDisplay">0</div>
+                </div>
+                <div class="rebirth-stat-box">
+                    <div class="rebirth-stat-label">Rebirth Points</div>
+                    <div class="rebirth-stat-value" id="rebirthPointsDisplay">0</div>
+                </div>
+            </div>
+
+            <button class="rebirth-action-button" id="performRebirthButton" onclick="performRebirth()">
+                ♻️ REBIRTH NOW
+            </button>
+
+            <div class="rebirth-shop-section" id="rebirthShopSection" style="display: none;">
+                <h3>🌟 REBIRTH SHOP</h3>
+                <p style="text-align: center; color: #666; margin-bottom: 20px;">Permanent upgrades that persist through all rebirths!</p>
+                
+                <div class="rebirth-shop-items">
+                    <div class="rebirth-shop-item">
+                        <h4>⭐ Godly Emmett</h4>
+                        <p>Adds +1 rebirth point per rebirth! Each purchase increases this bonus and costs more.</p>
+                        <div class="shop-item-footer">
+                            <span class="rebirth-price" id="godlyEmmettPrice">1 RP</span>
+                            <button class="buy-button" id="godlyEmmettButton" onclick="buyGodlyEmmett()">Buy</button>
+                        </div>
+                        <small style="color: #e91e63; display: block; margin-top: 10px; font-weight: bold; font-size: 1em;">
+                            Owned: <span id="godlyEmmettCount">0</span> | Bonus: +<span id="godlyEmmettBonus">1</span> RP per rebirth
+                        </small>
+                    </div>
+
+                    <div class="rebirth-shop-item">
+                        <h4>🤖 Emirs Zhang Gang Bot</h4>
+                        <p>Automates orders at 1.5x the speed of Thomas Jefferson Bot AND gives 1.5x more O'Brien points per automated order!</p>
+                        <div class="shop-item-footer">
+                            <span class="rebirth-price">5 RP</span>
+                            <button class="buy-button" id="emirsBotButton" onclick="buyEmirsBot()">Buy (One-time)</button>
+                        </div>
+                        <small style="color: #e91e63; display: block; margin-top: 10px; font-weight: bold; font-size: 1em;">
+                            Status: <span id="emirsBotStatus">Not Owned</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <button class="close-button" onclick="closeRebirth()">Close</button>
+        </div>
+    </div>
 
     <!-- Settings Modal -->
     <div class="settings-modal" id="settingsModal">
@@ -1798,6 +2043,7 @@
                     <tr>
                         <th>Rank</th>
                         <th>Player</th>
+                        <th>♻️ Rebirths</th>
                         <th>Orders Completed</th>
                         <th>O'Brien Points</th>
                         <th>💎 Gems</th>
@@ -1846,10 +2092,27 @@
         
         // Number formatting function
         function formatNumber(num) {
+            // Handle invalid numbers
+            if (!isFinite(num) || isNaN(num)) {
+                return '0';
+            }
+            
+            // Handle negative numbers
+            if (num < 0) {
+                return '-' + formatNumber(-num);
+            }
+            
             // Handle scientific notation for extremely large numbers (> 10^306)
+            // JavaScript's Number.MAX_VALUE is approximately 1.8e308
             if (num >= 1e306) {
                 const exponent = Math.floor(Math.log10(num));
-                const mantissa = num / Math.pow(10, exponent);
+                const mantissa = (num / Math.pow(10, exponent));
+                
+                // Ensure mantissa is valid
+                if (!isFinite(mantissa) || isNaN(mantissa)) {
+                    return 'e' + exponent;
+                }
+                
                 return mantissa.toFixed(2) + 'e' + exponent;
             }
             
@@ -1961,8 +2224,12 @@
             // Find appropriate abbreviation
             for (let i = 0; i < abbreviations.length; i++) {
                 if (num >= abbreviations[i].value) {
-                    const formatted = (num / abbreviations[i].value).toFixed(1).replace(/\.0$/, '');
-                    return formatted + abbreviations[i].symbol;
+                    const result = num / abbreviations[i].value;
+                    // Ensure the result is valid
+                    if (isFinite(result) && !isNaN(result)) {
+                        const formatted = result.toFixed(1).replace(/\.0$/, '');
+                        return formatted + abbreviations[i].symbol;
+                    }
                 }
             }
             
@@ -2024,6 +2291,21 @@
         let progressInterval2 = null;
 
         // ==========================================
+        // REBIRTH SYSTEM
+        // ==========================================
+        let rebirthCount = 0;
+        let rebirthPoints = 0;
+        let rebirthCost = 1e12; // 1 Trillion
+        let rebirthPointsPerRebirth = 1;
+        
+        // Rebirth shop items
+        let godlyEmmettOwned = 0;
+        let godlyEmmettCost = 1;
+        let emirsZhangGangBotOwned = false;
+        let emirsBotInterval = null;
+        let isEmirsBotOrder = false; // Track if current order is from Emirs bot
+
+        // ==========================================
         // AUDIO SYSTEM
         // ==========================================
         
@@ -2059,10 +2341,28 @@
             
             // Start background music if enabled
             if (musicEnabled) {
-                // Auto-play might be blocked by browser, so we handle the promise
-                backgroundMusic.play().catch(err => {
-                    console.log('Auto-play prevented. Music will start on first user interaction.');
-                });
+                // Try to auto-play, but handle browser blocking
+                const playPromise = backgroundMusic.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(err => {
+                        console.log('Auto-play prevented. Music will start on first user interaction.');
+                        // Add one-time event listener to start music on first user interaction
+                        const startMusicOnInteraction = function() {
+                            if (musicEnabled && backgroundMusic.paused) {
+                                backgroundMusic.play().catch(e => console.log('Music play failed:', e));
+                            }
+                            // Remove listeners after first interaction
+                            document.removeEventListener('click', startMusicOnInteraction);
+                            document.removeEventListener('keydown', startMusicOnInteraction);
+                            document.removeEventListener('touchstart', startMusicOnInteraction);
+                        };
+                        
+                        // Listen for various interaction events
+                        document.addEventListener('click', startMusicOnInteraction);
+                        document.addEventListener('keydown', startMusicOnInteraction);
+                        document.addEventListener('touchstart', startMusicOnInteraction);
+                    });
+                }
             }
             
             // Add click event listeners to all buttons
@@ -2283,6 +2583,11 @@
             // Apply World War I flat bonus
             pointsToAdd += ww1PointsPerOrder;
             
+            // Apply Emirs Bot 1.5x multiplier if this order is from Emirs bot
+            if (isEmirsBotOrder) {
+                pointsToAdd *= 1.5;
+            }
+            
             // Apply Brecken bonus (10x points)
             if (currentUser && currentUser.toLowerCase() === 'brecken') {
                 pointsToAdd *= 10;
@@ -2318,6 +2623,7 @@
             }, 500);
 
             currentOrder = null;
+            isEmirsBotOrder = false; // Reset flag
             let bonusText = (currentUser && currentUser.toLowerCase() === 'brecken') ? ' (10x Brecken Bonus!)' : '';
             let gemText = gemEarned ? `<p style="color: #9c27b0; font-weight: bold;">💎 +${gemsEarnedAmount} Gem${gemsEarnedAmount > 1 ? 's' : ''} earned!</p>` : '';
             document.getElementById('orderDisplay').innerHTML = `
@@ -2401,6 +2707,252 @@
 
         function closeShop() {
             document.getElementById('shopModal').style.display = 'none';
+        }
+
+        // ==========================================
+        // REBIRTH SYSTEM FUNCTIONS
+        // ==========================================
+        
+        function openRebirth() {
+            document.getElementById('rebirthModal').style.display = 'block';
+            updateRebirthDisplay();
+        }
+
+        function closeRebirth() {
+            document.getElementById('rebirthModal').style.display = 'none';
+        }
+
+        function updateRebirthDisplay() {
+            // Update current stats
+            document.getElementById('rebirthCurrentPoints').textContent = formatNumber(points);
+            document.getElementById('rebirthCostDisplay').textContent = formatNumber(rebirthCost);
+            document.getElementById('rebirthCountDisplay').textContent = rebirthCount;
+            document.getElementById('rebirthPointsDisplay').textContent = rebirthPoints;
+
+            // Update rebirth button state
+            const rebirthButton = document.getElementById('performRebirthButton');
+            if (points >= rebirthCost) {
+                rebirthButton.disabled = false;
+                rebirthButton.textContent = '♻️ REBIRTH NOW (Get ' + rebirthPointsPerRebirth + ' RP)';
+            } else {
+                rebirthButton.disabled = true;
+                rebirthButton.textContent = '♻️ Need ' + formatNumber(rebirthCost) + ' Points';
+            }
+
+            // Show/hide rebirth shop
+            const rebirthShopSection = document.getElementById('rebirthShopSection');
+            if (rebirthPoints > 0 || rebirthCount > 0) {
+                rebirthShopSection.style.display = 'block';
+            } else {
+                rebirthShopSection.style.display = 'none';
+            }
+
+            // Update rebirth shop displays
+            updateRebirthShopDisplay();
+
+            // Update main rebirth button
+            const mainRebirthButton = document.getElementById('rebirthButton');
+            if (points >= rebirthCost) {
+                mainRebirthButton.style.background = 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)';
+                mainRebirthButton.style.boxShadow = '0 5px 20px rgba(76, 175, 80, 0.6)';
+            } else {
+                mainRebirthButton.style.background = 'linear-gradient(135deg, #e91e63 0%, #c2185b 100%)';
+                mainRebirthButton.style.boxShadow = '0 5px 20px rgba(233, 30, 99, 0.4)';
+            }
+        }
+
+        function updateRebirthShopDisplay() {
+            // Godly Emmett
+            document.getElementById('godlyEmmettPrice').textContent = formatNumber(godlyEmmettCost) + ' RP';
+            document.getElementById('godlyEmmettCount').textContent = godlyEmmettOwned;
+            document.getElementById('godlyEmmettBonus').textContent = 1 + godlyEmmettOwned;
+            const godlyButton = document.getElementById('godlyEmmettButton');
+            godlyButton.disabled = rebirthPoints < godlyEmmettCost;
+
+            // Emirs Bot
+            const emirsButton = document.getElementById('emirsBotButton');
+            const emirsStatus = document.getElementById('emirsBotStatus');
+            if (emirsZhangGangBotOwned) {
+                emirsButton.disabled = true;
+                emirsButton.textContent = 'OWNED';
+                emirsStatus.textContent = '✅ Owned - Active!';
+                emirsStatus.style.color = '#4caf50';
+            } else {
+                emirsButton.disabled = rebirthPoints < 5;
+                emirsStatus.textContent = 'Not Owned';
+                emirsStatus.style.color = '#999';
+            }
+        }
+
+        function performRebirth() {
+            if (points < rebirthCost) {
+                alert('❌ Not enough O\'Brien Points to rebirth!\n\nYou need ' + formatNumber(rebirthCost) + ' points.');
+                return;
+            }
+
+            const confirmation = confirm(
+                '⚠️ ARE YOU SURE YOU WANT TO REBIRTH?\n\n' +
+                'This will:\n' +
+                '✅ Give you ' + rebirthPointsPerRebirth + ' Rebirth Points\n' +
+                '❌ Reset ALL O\'Brien Points to 0\n' +
+                '❌ Reset ALL Shop Upgrades\n' +
+                '❌ Reset ALL Gems\n' +
+                '❌ Reset Orders Completed to 0\n\n' +
+                'Rebirth Shop upgrades will remain!\n\n' +
+                'Click OK to proceed with rebirth.'
+            );
+
+            if (!confirmation) {
+                return;
+            }
+
+            // Grant rebirth points
+            rebirthPoints += rebirthPointsPerRebirth;
+            rebirthCount++;
+
+            // Increase rebirth cost (multiply by 10)
+            rebirthCost *= 10;
+
+            // Reset game progress
+            points = 0;
+            ordersCompleted = 0;
+            gems = 0;
+
+            // Reset shop upgrades
+            billOfRightsOwned = 0;
+            billOfRightsPrice = 10;
+            pointMultiplier = 1;
+            billOfRightsBadgeEarned = false;
+
+            declarationOwned = false;
+
+            articlesOwned = 0;
+            articlesPrice = 10000;
+            articlesMultiplier = 1;
+
+            stampActOwned = 0;
+            stampActPrice = 50000;
+            stampActBoost = 0;
+
+            ww1Owned = 0;
+            ww1Price = 2000;
+            ww1PointsPerOrder = 0;
+
+            btd1Owned = false;
+            gemChance = 0;
+
+            stevenBradleyOwned = false;
+            if (stevenInterval) {
+                clearInterval(stevenInterval);
+                stevenInterval = null;
+            }
+
+            noahRolandOwned = false;
+            orderMultiplier = 1;
+
+            franksKFCOwned = 0;
+            franksKFCPrice = 5;
+            gemMultiplier = 1;
+            franksKFCBadgeEarned = false;
+
+            kevinBaldHeadOwned = false;
+            kevinBaldHeadBadgeEarned = false;
+
+            // Clear current orders
+            if (currentOrder) {
+                clearInterval(progressInterval);
+                currentOrder = null;
+                progress = 0;
+            }
+
+            if (currentOrder2) {
+                clearInterval(progressInterval2);
+                currentOrder2 = null;
+                progress2 = 0;
+            }
+
+            // Update all displays
+            updateDisplay();
+            updateShopDisplay();
+            updateRebirthDisplay();
+            updateLeaderboard();
+
+            // Save progress
+            saveProgress();
+
+            alert('🎉 REBIRTH SUCCESSFUL!\n\n' +
+                'You gained ' + rebirthPointsPerRebirth + ' Rebirth Points!\n' +
+                'Total Rebirths: ' + rebirthCount + '\n' +
+                'Total Rebirth Points: ' + rebirthPoints + '\n\n' +
+                'Next rebirth cost: ' + formatNumber(rebirthCost));
+
+            // Close rebirth modal
+            closeRebirth();
+        }
+
+        function buyGodlyEmmett() {
+            if (rebirthPoints < godlyEmmettCost) {
+                alert('❌ Not enough Rebirth Points!\n\nYou need ' + formatNumber(godlyEmmettCost) + ' RP.');
+                return;
+            }
+
+            rebirthPoints -= godlyEmmettCost;
+            godlyEmmettOwned++;
+            rebirthPointsPerRebirth = 1 + godlyEmmettOwned;
+            
+            // Increase cost (multiply by 2.5)
+            godlyEmmettCost = Math.ceil(godlyEmmettCost * 2.5);
+
+            updateRebirthDisplay();
+            saveProgress();
+
+            alert('✅ Purchased Godly Emmett!\n\nYou now gain ' + rebirthPointsPerRebirth + ' Rebirth Points per rebirth!\n\nNext cost: ' + formatNumber(godlyEmmettCost) + ' RP');
+        }
+
+        function buyEmirsBot() {
+            if (emirsZhangGangBotOwned) {
+                alert('❌ You already own Emirs Zhang Gang Bot!');
+                return;
+            }
+
+            if (rebirthPoints < 5) {
+                alert('❌ Not enough Rebirth Points!\n\nYou need 5 RP.');
+                return;
+            }
+
+            rebirthPoints -= 5;
+            emirsZhangGangBotOwned = true;
+
+            // Start the bot if not already running
+            startEmirsBot();
+
+            updateRebirthDisplay();
+            saveProgress();
+
+            alert('✅ Purchased Emirs Zhang Gang Bot!\n\nIt will now automatically create orders at 1.5x the speed of Thomas Jefferson Bot with 1.5x more points!');
+        }
+
+        function startEmirsBot() {
+            if (!emirsZhangGangBotOwned) return;
+
+            // Clear any existing interval
+            if (emirsBotInterval) {
+                clearInterval(emirsBotInterval);
+            }
+
+            // Emirs bot creates orders every 3 seconds (1.5x faster than TJ bot which is 4.5 seconds)
+            emirsBotInterval = setInterval(() => {
+                if (emirsZhangGangBotOwned) {
+                    // Use Kevin's second order area if available, otherwise use main
+                    if (kevinBaldHeadOwned && !currentOrder2) {
+                        // Start order in second area (Kevin's area is already 1.5x faster)
+                        startOrder2();
+                    } else if (!currentOrder) {
+                        isEmirsBotOrder = true; // Set flag before starting order
+                        startOrder();
+                    }
+                }
+            }, 3000);
         }
 
         function updateShopDisplay() {
@@ -3389,6 +3941,14 @@
                 franksKFCBadgeEarned: franksKFCBadgeEarned,
                 kevinBaldHeadOwned: kevinBaldHeadOwned,
                 kevinBaldHeadBadgeEarned: kevinBaldHeadBadgeEarned,
+                // Rebirth system data
+                rebirthCount: rebirthCount,
+                rebirthPoints: rebirthPoints,
+                rebirthCost: rebirthCost,
+                rebirthPointsPerRebirth: rebirthPointsPerRebirth,
+                godlyEmmettOwned: godlyEmmettOwned,
+                godlyEmmettCost: godlyEmmettCost,
+                emirsZhangGangBotOwned: emirsZhangGangBotOwned,
                 lastSaved: new Date().toISOString()
             };
             
@@ -3411,6 +3971,7 @@
                     orders: ordersCompleted,
                     points: points,
                     gems: gems,
+                    rebirths: rebirthCount,
                     title: selectedTitle || 'none',
                     lastUpdated: Date.now()
                 };
@@ -3459,6 +4020,20 @@
                 franksKFCBadgeEarned = saveData.franksKFCBadgeEarned || false;
                 kevinBaldHeadOwned = saveData.kevinBaldHeadOwned || false;
                 kevinBaldHeadBadgeEarned = saveData.kevinBaldHeadBadgeEarned || false;
+                
+                // Load rebirth data
+                rebirthCount = saveData.rebirthCount || 0;
+                rebirthPoints = saveData.rebirthPoints || 0;
+                rebirthCost = saveData.rebirthCost || 1e12;
+                rebirthPointsPerRebirth = saveData.rebirthPointsPerRebirth || 1;
+                godlyEmmettOwned = saveData.godlyEmmettOwned || 0;
+                godlyEmmettCost = saveData.godlyEmmettCost || 1;
+                emirsZhangGangBotOwned = saveData.emirsZhangGangBotOwned || false;
+                
+                // Start Emirs bot if owned
+                if (emirsZhangGangBotOwned) {
+                    startEmirsBot();
+                }
                 
                 // Update display
                 document.getElementById('points').textContent = formatNumber(points);
@@ -4124,7 +4699,7 @@
 
         function loadLeaderboard() {
             const leaderboardBody = document.getElementById('leaderboardBody');
-            leaderboardBody.innerHTML = '<tr><td colspan="5" class="no-data-message">Loading leaderboard...</td></tr>';
+            leaderboardBody.innerHTML = '<tr><td colspan="6" class="no-data-message">Loading leaderboard...</td></tr>';
 
             if (firebaseEnabled) {
                 // Load from Firebase
@@ -4157,7 +4732,7 @@
                 })
                 .catch((error) => {
                     console.error("Error loading Firebase leaderboard:", error);
-                    leaderboardBody.innerHTML = '<tr><td colspan="5" class="no-data-message">Error loading leaderboard. Please try again.</td></tr>';
+                    leaderboardBody.innerHTML = '<tr><td colspan="6" class="no-data-message">Error loading leaderboard. Please try again.</td></tr>';
                 });
         }
         
@@ -4177,6 +4752,7 @@
                     orders: saveData.ordersCompleted || 0,
                     points: saveData.points || 0,
                     gems: saveData.gems || 0,
+                    rebirths: saveData.rebirthCount || 0,
                     title: saveData.selectedTitle || 'none'
                 });
             }
@@ -4194,7 +4770,7 @@
             leaderboardBody.innerHTML = '';
             
             if (players.length === 0) {
-                leaderboardBody.innerHTML = '<tr><td colspan="5" class="no-data-message">No players yet! Be the first to join!</td></tr>';
+                leaderboardBody.innerHTML = '<tr><td colspan="6" class="no-data-message">No players yet! Be the first to join!</td></tr>';
                 return;
             }
 
@@ -4237,6 +4813,7 @@
                         ${titleDisplay}
                         ${isCurrentUser ? ' <strong style="color: #2196f3;">(You)</strong>' : ''}
                     </td>
+                    <td><strong style="color: #e91e63;">${formatNumber(player.rebirths || 0)}</strong></td>
                     <td><strong>${formatNumber(player.orders)}</strong></td>
                     <td>${formatNumber(player.points)}</td>
                     <td>${formatNumber(player.gems || 0)}</td>
