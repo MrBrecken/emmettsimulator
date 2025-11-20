@@ -1,9 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
+<!--
+    ╔══════════════════════════════════════════════════════════════════════╗
+    ║                  EMMETT O'BRIEN SIMULATOR                            ║
+    ║                                                                      ║
+    ║  🌐 ENABLE GLOBAL LEADERBOARD:                                       ║
+    ║  The game works out of the box with local leaderboards.             ║
+    ║  To enable GLOBAL leaderboards across all players:                  ║
+    ║                                                                      ║
+    ║  1. See FIREBASE_SETUP_INSTRUCTIONS.md for detailed steps           ║
+    ║  2. Get free Firebase account at https://firebase.google.com/       ║
+    ║  3. Replace the firebaseConfig below with your config               ║
+    ║  4. That's it! Takes ~5 minutes.                                    ║
+    ║                                                                      ║
+    ║  Without Firebase: Leaderboard shows only local players             ║
+    ║  With Firebase: Leaderboard shows ALL players worldwide! 🌍         ║
+    ╚══════════════════════════════════════════════════════════════════════╝
+-->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Emmett O'Brien Simulator</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -1485,6 +1507,7 @@
         <div class="leaderboard-content">
             <h2>🏆 Leaderboard</h2>
             <p class="leaderboard-subtitle">Top 50 Players by Orders Completed</p>
+            <div id="leaderboardStatus" style="text-align: center; margin-bottom: 15px; padding: 10px; border-radius: 8px; font-size: 0.9em;"></div>
             <table class="leaderboard-table">
                 <thead>
                     <tr>
@@ -1492,6 +1515,7 @@
                         <th>Player</th>
                         <th>Orders Completed</th>
                         <th>O'Brien Points</th>
+                        <th>💎 Gems</th>
                     </tr>
                 </thead>
                 <tbody id="leaderboardBody">
@@ -1503,6 +1527,57 @@
     </div>
 
     <script>
+        // ==========================================
+        // FIREBASE CONFIGURATION
+        // ==========================================
+        // To enable the global leaderboard, follow these steps:
+        // 1. Go to https://firebase.google.com/
+        // 2. Click "Get Started" and create a free account
+        // 3. Create a new project (name it whatever you want)
+        // 4. In your project, click "Realtime Database" in the left menu
+        // 5. Click "Create Database" and choose "Start in test mode"
+        // 6. Go to Project Settings (gear icon) > General
+        // 7. Scroll down to "Your apps" and click the web icon (</>)
+        // 8. Register your app and copy the firebaseConfig object
+        // 9. Replace the config below with your config
+        // 10. In Realtime Database, go to Rules tab and use these rules:
+        //     {
+        //       "rules": {
+        //         "leaderboard": {
+        //           ".read": true,
+        //           ".write": true
+        //         }
+        //       }
+        //     }
+        
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY_HERE",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        
+        // Initialize Firebase
+        let database = null;
+        let firebaseEnabled = false;
+        
+        try {
+            if (firebaseConfig.apiKey !== "YOUR_API_KEY_HERE") {
+                firebase.initializeApp(firebaseConfig);
+                database = firebase.database();
+                firebaseEnabled = true;
+                console.log("✅ Firebase connected - Global leaderboard enabled!");
+            } else {
+                console.log("ℹ️ Firebase not configured - Using local leaderboard only");
+            }
+        } catch (error) {
+            console.error("❌ Firebase initialization error:", error);
+            console.log("ℹ️ Falling back to local leaderboard");
+        }
+        
         // Number formatting function
         function formatNumber(num) {
             if (num >= 1000000000) {
@@ -2543,8 +2618,33 @@
             
             localStorage.setItem(`obrienSave_${currentUser}`, JSON.stringify(saveData));
             
+            // Sync leaderboard data to Firebase
+            syncToLeaderboard();
+            
             // Update last save time display if profile is open
             updateLastSaveTime();
+        }
+        
+        // Sync player data to Firebase leaderboard
+        function syncToLeaderboard() {
+            if (!currentUser || !firebaseEnabled) return;
+            
+            try {
+                const leaderboardData = {
+                    username: currentUser,
+                    orders: ordersCompleted,
+                    points: points,
+                    gems: gems,
+                    title: selectedTitle || 'none',
+                    lastUpdated: Date.now()
+                };
+                
+                // Use username as key to prevent duplicates
+                const sanitizedUsername = currentUser.replace(/[.#$[\]]/g, '_');
+                database.ref('leaderboard/' + sanitizedUsername).set(leaderboardData);
+            } catch (error) {
+                console.error("Error syncing to leaderboard:", error);
+            }
         }
 
         function loadProgress() {
@@ -3061,7 +3161,24 @@
         // Leaderboard functions
         function openLeaderboard() {
             document.getElementById('leaderboardModal').style.display = 'block';
+            
+            // Show Firebase status
+            const statusDiv = document.getElementById('leaderboardStatus');
+            if (firebaseEnabled) {
+                statusDiv.innerHTML = '🌐 <strong>Global Leaderboard</strong> - Showing all players worldwide!';
+                statusDiv.style.background = 'linear-gradient(135deg, #4caf50 0%, #45a049 100%)';
+                statusDiv.style.color = 'white';
+            } else {
+                statusDiv.innerHTML = '📱 <strong>Local Leaderboard</strong> - Only showing players on this device. <a href="#" onclick="showFirebaseInstructions(); return false;" style="color: #2196f3; text-decoration: underline;">Enable global leaderboard</a>';
+                statusDiv.style.background = '#fff3cd';
+                statusDiv.style.color = '#856404';
+            }
+            
             loadLeaderboard();
+        }
+        
+        function showFirebaseInstructions() {
+            alert(`To enable the GLOBAL LEADERBOARD and compete with all players:\n\n1. Open the HTML file in a text editor\n2. Find the FIREBASE CONFIGURATION section at the top of the <script> tag\n3. Follow the detailed instructions there to set up your free Firebase account\n4. Replace the placeholder config with your Firebase config\n\nIt's free and takes about 5 minutes!`);
         }
 
         function closeLeaderboard() {
@@ -3070,11 +3187,49 @@
 
         function loadLeaderboard() {
             const leaderboardBody = document.getElementById('leaderboardBody');
-            leaderboardBody.innerHTML = '';
+            leaderboardBody.innerHTML = '<tr><td colspan="5" class="no-data-message">Loading leaderboard...</td></tr>';
+
+            if (firebaseEnabled) {
+                // Load from Firebase
+                loadFirebaseLeaderboard();
+            } else {
+                // Load from localStorage
+                loadLocalLeaderboard();
+            }
+        }
+        
+        function loadFirebaseLeaderboard() {
+            const leaderboardBody = document.getElementById('leaderboardBody');
+            
+            database.ref('leaderboard').once('value')
+                .then((snapshot) => {
+                    const leaderboardData = [];
+                    
+                    snapshot.forEach((childSnapshot) => {
+                        const player = childSnapshot.val();
+                        leaderboardData.push(player);
+                    });
+                    
+                    // Sort by orders (descending)
+                    leaderboardData.sort((a, b) => b.orders - a.orders);
+                    
+                    // Take top 50
+                    const top50 = leaderboardData.slice(0, 50);
+                    
+                    displayLeaderboard(top50, leaderboardBody);
+                })
+                .catch((error) => {
+                    console.error("Error loading Firebase leaderboard:", error);
+                    leaderboardBody.innerHTML = '<tr><td colspan="5" class="no-data-message">Error loading leaderboard. Please try again.</td></tr>';
+                });
+        }
+        
+        function loadLocalLeaderboard() {
+            const leaderboardBody = document.getElementById('leaderboardBody');
+            const leaderboardData = [];
 
             // Get all accounts
             const accounts = JSON.parse(localStorage.getItem('obrienAccounts') || '{}');
-            const leaderboardData = [];
 
             // Collect data from all accounts
             for (const username in accounts) {
@@ -3084,6 +3239,7 @@
                     username: username,
                     orders: saveData.ordersCompleted || 0,
                     points: saveData.points || 0,
+                    gems: saveData.gems || 0,
                     title: saveData.selectedTitle || 'none'
                 });
             }
@@ -3094,13 +3250,19 @@
             // Take top 50
             const top50 = leaderboardData.slice(0, 50);
 
-            if (top50.length === 0) {
-                leaderboardBody.innerHTML = '<tr><td colspan="4" class="no-data-message">No players yet! Be the first to join!</td></tr>';
+            displayLeaderboard(top50, leaderboardBody);
+        }
+        
+        function displayLeaderboard(players, leaderboardBody) {
+            leaderboardBody.innerHTML = '';
+            
+            if (players.length === 0) {
+                leaderboardBody.innerHTML = '<tr><td colspan="5" class="no-data-message">No players yet! Be the first to join!</td></tr>';
                 return;
             }
 
             // Render leaderboard
-            top50.forEach((player, index) => {
+            players.forEach((player, index) => {
                 const rank = index + 1;
                 const isCurrentUser = currentUser && player.username === currentUser;
                 
@@ -3140,6 +3302,7 @@
                     </td>
                     <td><strong>${formatNumber(player.orders)}</strong></td>
                     <td>${formatNumber(player.points)}</td>
+                    <td>${formatNumber(player.gems || 0)}</td>
                 `;
 
                 leaderboardBody.appendChild(row);
