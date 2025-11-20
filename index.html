@@ -4,17 +4,18 @@
     ╔══════════════════════════════════════════════════════════════════════╗
     ║                  EMMETT O'BRIEN SIMULATOR                            ║
     ║                                                                      ║
-    ║  🌐 ENABLE GLOBAL LEADERBOARD:                                       ║
-    ║  The game works out of the box with local leaderboards.             ║
-    ║  To enable GLOBAL leaderboards across all players:                  ║
+    ║  🌐 GLOBAL LEADERBOARD: ✅ ENABLED                                   ║
     ║                                                                      ║
-    ║  1. See FIREBASE_SETUP_INSTRUCTIONS.md for detailed steps           ║
-    ║  2. Get free Firebase account at https://firebase.google.com/       ║
-    ║  3. Replace the firebaseConfig below with your config               ║
-    ║  4. That's it! Takes ~5 minutes.                                    ║
+    ║  Firebase is configured and ready to go!                            ║
+    ║  All players worldwide can compete on the same leaderboard.         ║
     ║                                                                      ║
-    ║  Without Firebase: Leaderboard shows only local players             ║
-    ║  With Firebase: Leaderboard shows ALL players worldwide! 🌍         ║
+    ║  📊 View your database at:                                           ║
+    ║  https://console.firebase.google.com/project/emmett-obrien-game     ║
+    ║                                                                      ║
+    ║  The leaderboard will automatically sync when players:              ║
+    ║  - Log in to an account                                             ║
+    ║  - Complete orders                                                  ║
+    ║  - Buy upgrades                                                     ║
     ╚══════════════════════════════════════════════════════════════════════╝
 -->
 <head>
@@ -1530,34 +1531,18 @@
         // ==========================================
         // FIREBASE CONFIGURATION
         // ==========================================
-        // To enable the global leaderboard, follow these steps:
-        // 1. Go to https://firebase.google.com/
-        // 2. Click "Get Started" and create a free account
-        // 3. Create a new project (name it whatever you want)
-        // 4. In your project, click "Realtime Database" in the left menu
-        // 5. Click "Create Database" and choose "Start in test mode"
-        // 6. Go to Project Settings (gear icon) > General
-        // 7. Scroll down to "Your apps" and click the web icon (</>)
-        // 8. Register your app and copy the firebaseConfig object
-        // 9. Replace the config below with your config
-        // 10. In Realtime Database, go to Rules tab and use these rules:
-        //     {
-        //       "rules": {
-        //         "leaderboard": {
-        //           ".read": true,
-        //           ".write": true
-        //         }
-        //       }
-        //     }
+        // Firebase configuration for Emmett O'Brien Game
+        // This connects to your Firebase Realtime Database for the global leaderboard
         
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY_HERE",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyBuTPp6gjPtvM4HgOypHOxqDokAPoNp-z4",
+            authDomain: "emmett-obrien-game.firebaseapp.com",
+            databaseURL: "https://emmett-obrien-game-default-rtdb.firebaseio.com",
+            projectId: "emmett-obrien-game",
+            storageBucket: "emmett-obrien-game.firebasestorage.app",
+            messagingSenderId: "38645692528",
+            appId: "1:38645692528:web:8637f1ab6bd192b9f31cb5",
+            measurementId: "G-Y9TWLM159M"
         };
         
         // Initialize Firebase
@@ -1565,14 +1550,11 @@
         let firebaseEnabled = false;
         
         try {
-            if (firebaseConfig.apiKey !== "YOUR_API_KEY_HERE") {
-                firebase.initializeApp(firebaseConfig);
-                database = firebase.database();
-                firebaseEnabled = true;
-                console.log("✅ Firebase connected - Global leaderboard enabled!");
-            } else {
-                console.log("ℹ️ Firebase not configured - Using local leaderboard only");
-            }
+            firebase.initializeApp(firebaseConfig);
+            database = firebase.database();
+            firebaseEnabled = true;
+            console.log("✅ Firebase connected - Global leaderboard enabled!");
+            console.log("🌐 All players worldwide can now compete together!");
         } catch (error) {
             console.error("❌ Firebase initialization error:", error);
             console.log("ℹ️ Falling back to local leaderboard");
@@ -3165,20 +3147,16 @@
             // Show Firebase status
             const statusDiv = document.getElementById('leaderboardStatus');
             if (firebaseEnabled) {
-                statusDiv.innerHTML = '🌐 <strong>Global Leaderboard</strong> - Showing all players worldwide!';
+                statusDiv.innerHTML = '🌐 <strong>Global Leaderboard</strong> - Showing all players worldwide in real-time!';
                 statusDiv.style.background = 'linear-gradient(135deg, #4caf50 0%, #45a049 100%)';
                 statusDiv.style.color = 'white';
             } else {
-                statusDiv.innerHTML = '📱 <strong>Local Leaderboard</strong> - Only showing players on this device. <a href="#" onclick="showFirebaseInstructions(); return false;" style="color: #2196f3; text-decoration: underline;">Enable global leaderboard</a>';
+                statusDiv.innerHTML = '⚠️ <strong>Firebase Not Connected</strong> - See DATABASE_RULES_SETUP.md to enable global leaderboard. Check browser console (F12) for errors.';
                 statusDiv.style.background = '#fff3cd';
                 statusDiv.style.color = '#856404';
             }
             
             loadLeaderboard();
-        }
-        
-        function showFirebaseInstructions() {
-            alert(`To enable the GLOBAL LEADERBOARD and compete with all players:\n\n1. Open the HTML file in a text editor\n2. Find the FIREBASE CONFIGURATION section at the top of the <script> tag\n3. Follow the detailed instructions there to set up your free Firebase account\n4. Replace the placeholder config with your Firebase config\n\nIt's free and takes about 5 minutes!`);
         }
 
         function closeLeaderboard() {
